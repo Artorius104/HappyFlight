@@ -27,24 +27,40 @@ def global_client_type_distrib(df):
     customer_type_dist = df.groupBy("Customer Type").count().toPandas()
     total_count = customer_type_dist['count'].sum()
     customer_type_dist['percentage'] = (customer_type_dist['count'] / total_count) * 100
-    customer_type_dist.to_csv(f'{local_path}satisfaction_distribution.csv', index=False)
+    customer_type_dist.to_csv(f'{local_path}client_type_distribution.csv', index=False)
 
 def age_distrib(df):
     age_dist = df.select("Age").toPandas()
-    age_dist.to_csv(f'{local_path}satisfaction_distribution.csv', index=False)
+    age_dist.to_csv(f'{local_path}age_distribution.csv', index=False)
+
+def global_mean_notes(df, rating_columns):
+    mean_ratings = df[rating_columns].mean()
+    mean_ratings_sorted = mean_ratings.sort_values(ascending=True)
+    mean_ratings_sorted.to_csv(f'{local_path}global_means_notes.csv', index=False)
+
+def global_ecart_type(df, rating_columns):
+    std_devs = df[rating_columns].std()
+    std_devs.to_csv(f'{local_path}ecart_type.csv', index=False)
+
+def global_variance(df, rating_columns):
+    std_devs = df[rating_columns].var()
+    std_devs.to_csv(f'{local_path}variance.csv', index=False)
 
 def age_filtered_distrib(df_age_filtered):
     age_dist_filtered = df_age_filtered.select("Age").toPandas()
+    age_dist_filtered.to_csv(f'{local_path}age_distribution_filtered.csv', index=False)
 
 def filtered_satisfaction(df_age_filtered):
     filtered_satisfaction_dist = df_age_filtered.groupBy("satisfaction").count().toPandas()
     total_count = filtered_satisfaction_dist['count'].sum()
     filtered_satisfaction_dist['percentage'] = (filtered_satisfaction_dist['count'] / total_count) * 100
+    filtered_satisfaction_dist.to_csv(f'{local_path}filtered_satisfaction_distribution.csv', index=False)
 
 def filtered_client_type_distrib(df_age_filtered):
     filtered_customer_type_dist = df_age_filtered.groupBy("Customer Type").count().toPandas()
     total_count = filtered_customer_type_dist['count'].sum()
     filtered_customer_type_dist['percentage'] = (filtered_customer_type_dist['count'] / total_count) * 100
+    filtered_customer_type_dist.to_csv(f'{local_path}filtered_customer_type_distribution.csv', index=False)
 
 def correlation_matrix(df):
     numeric_cols = [
@@ -55,7 +71,7 @@ def correlation_matrix(df):
         'Departure Delay in Minutes', 'Arrival Delay in Minutes'
     ]
     df_pd = df.select(numeric_cols).toPandas()
-    correlation_matrix = df_pd.corr()
+    df_pd.to_csv(f'{local_path}correlation_matrix.csv', index=False)
 
 def travel_type_distrib(df, loyal):
     if loyal is True:
@@ -66,18 +82,34 @@ def travel_type_distrib(df, loyal):
     travel_type_dist = df_filtered.groupBy("Type of Travel").count().toPandas()
     total_count = travel_type_dist['count'].sum()
     travel_type_dist['percentage'] = (travel_type_dist['count'] / total_count) * 100
+    if loyal is True:
+        travel_type_dist.to_csv(f'{local_path}travel_type_distribution_loyal.csv', index=False)
+    else:
+        travel_type_dist.to_csv(f'{local_path}travel_type_distribution_disloyal.csv', index=False)
 
 def travel_type_satisfaction(df, loyal):
     travel_satisfaction_dist = df.groupBy("Type of Travel", "satisfaction").count().toPandas()
     travel_satisfaction_dist.columns = ['Type of Travel', 'Satisfaction', 'Count']
+    if loyal is True:
+        travel_satisfaction_dist.to_csv(f'{local_path}travel_type_satisfaction_distribution_loyal.csv', index=False)
+    else:
+        travel_satisfaction_dist.to_csv(f'{local_path}travel_type_satisfaction_distribution_disloyal.csv', index=False)
 
 def business_satisfaction_per_class(df, loyal):
     filtered_df = df.filter(df["Type of Travel"] == "Business travel")
     class_satisfaction_distribution = filtered_df.groupBy("Class", "satisfaction").count().toPandas()
+    if loyal is True:
+        class_satisfaction_distribution.to_csv(f'{local_path}business_class_satisfaction_distribution_loyal.csv', index=False)
+    else:
+        class_satisfaction_distribution.to_csv(f'{local_path}business_class_satisfaction_distribution_disloyal.csv', index=False)
 
 def other_satisfaction_per_class(df, loyal):
     filtered_df = df.filter(df["Type of Travel"] == "Personal Travel")
     class_satisfaction_distribution = filtered_df.groupBy("Class", "satisfaction").count().toPandas()
+    if loyal is True:
+        class_satisfaction_distribution.to_csv(f'{local_path}personal_class_satisfaction_distribution_loyal.csv', index=False)
+    else:
+        class_satisfaction_distribution.to_csv(f'{local_path}personal_class_satisfaction_distribution_disloyal.csv', index=False)
 
 def given_notes_per_services(df, loyal, classe):
     # Séparer les clients satisfaits et insatisfaits
@@ -105,15 +137,23 @@ def given_notes_per_services(df, loyal, classe):
 
     # Combiner les moyennes dans un seul DataFrame
     means_df = pd.merge(satisfied_means, dissatisfied_means, on='Parameter')
-    means_melted = means_df.melt(
-        id_vars='Parameter',
-        value_vars=['Satisfied', 'Dissatisfied'],
-        var_name='Satisfaction',
-        value_name='Average Score'
-    )
+    if loyal is True:
+        means_df.to_csv(f'{local_path}services_satisfaction_loyal.csv', index=False)
+    else:
+        if classe == "eco":
+            means_df.to_csv(f'{local_path}services_satisfaction_disloyal_eco.csv', index=False)
+        else:
+            means_df.to_csv(f'{local_path}services_satisfaction_disloyal_business.csv', index=False)
 
 def flight_distrib(df, loyal, classe):
     distance_dist = df.select("Flight Distance").toPandas()
+    if loyal is True:
+        distance_dist.to_csv(f'{local_path}flight_distribution_loyal.csv', index=False)
+    else:
+        if classe == "eco":
+            distance_dist.to_csv(f'{local_path}flight_distribution_disloyal_eco.csv', index=False)
+        else:
+            distance_dist.to_csv(f'{local_path}flight_distribution_disloyal_business.csv', index=False)
 
 def satisfaction_per_distance(df, loyal):
     # On garde la distance de vol et la satisfaction
@@ -144,6 +184,11 @@ def satisfaction_per_distance(df, loyal):
 
     # Convertir en DataFrame Pandas pour la visualisation
     satisfaction_percentage = satisfaction_percentage.reset_index()
+    if loyal is True:
+        satisfaction_percentage.to_csv(f'{local_path}satisfaction_per_distance_loyal.csv', index=False)
+    else:
+        satisfaction_percentage.to_csv(f'{local_path}satisfaction_per_distance_disloyal.csv', index=False)
+
 
 def satisfaction_per_distance_per_param(df, loyal):
     # Convertir en DataFrame Pandas pour faciliter la manipulation
@@ -199,6 +244,11 @@ def satisfaction_per_distance_per_param(df, loyal):
         on='Distance Bin',
         suffixes=('_satisfied', '_dissatisfied')
     )
+    if loyal is True:
+        avg_scores.to_csv(f'{local_path}services_satisfaction_per_distance_loyal.csv', index=False)
+    else:
+        avg_scores.to_csv(f'{local_path}services_satisfaction_per_distance_disloyal.csv', index=False)
+
 
 # MAIN FUNCTION
 def get_spark_analyses():
@@ -214,6 +264,17 @@ def get_spark_analyses():
     global_client_type_distrib(df)
     # Distribution de l'âge
     age_distrib(df)
+    # Moyennes globales des notes
+    df_pd = df.toPandas()
+    rating_columns = [
+        'Seat comfort', 'Departure/Arrival time convenient', 'Food and drink',
+        'Gate location', 'Online support', 'Ease of Online booking', 'On-board service',
+        'Leg room service', 'Baggage handling', 'Checkin service', 'Cleanliness',
+        'Online boarding'
+    ]
+    global_mean_notes(df_pd, rating_columns)
+    global_ecart_type(df_pd, rating_columns)
+    global_variance(df_pd, rating_columns)
 
     # Distribution de la majorité entre 20 ans et 60 ans
     df_age_filtered = df.filter((df.Age >= 20) & (df.Age <= 60))
