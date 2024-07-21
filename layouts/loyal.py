@@ -49,7 +49,7 @@ layout_loyal = dbc.Container(
             className="mb-4",
         ),
         dbc.Row(
-            dbc.Col(dcc.Graph(figure=services_comparison_fig), width=12),
+            # dbc.Col(dcc.Graph(figure=services_comparison_fig), width=12),
             className="mb-4",
         ),
     ],

@@ -194,19 +194,10 @@ def personal_class_satisfaction_bar_chart(df):
     return fig
 
 def per_services_satisfaction_bar_chart(df):
-    # Préparer les données pour le graphique
-    df_melted = df.melt(
-        id_vars='Parameter',
-        value_vars=['Satisfied', 'Dissatisfied'],
-        var_name='Satisfaction',
-        value_name='Average Score'
-    )
-
-    # Créer le graphique en barres
     fig = go.Figure()
 
-    for satisfaction in df_melted['Satisfaction'].unique():
-        df_subset = df_melted[df_melted['Satisfaction'] == satisfaction]
+    for satisfaction in df['Satisfaction'].unique():
+        df_subset = df[df['Satisfaction'] == satisfaction]
         fig.add_trace(
             go.Bar(
                 x=df_subset['Parameter'],

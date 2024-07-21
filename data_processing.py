@@ -151,15 +151,21 @@ def given_notes_per_services(df, loyal, classe):
 
     # Combiner les moyennes dans un seul DataFrame
     means_df = pd.merge(satisfied_means, dissatisfied_means, on='Parameter')
+    df_melted = means_df.melt(
+        id_vars='Parameter',
+        value_vars=['Satisfied', 'Dissatisfied'],
+        var_name='Satisfaction',
+        value_name='Average Score'
+    )
     if loyal is True:
-        means_df.to_csv(f'{local_path}services_satisfaction_loyal.csv', index=False)
+        df_melted.to_csv(f'{local_path}services_satisfaction_loyal.csv', index=False)
         print(f'{local_path}services_satisfaction_loyal.csv LOADED')
     else:
         if classe == "eco":
-            means_df.to_csv(f'{local_path}services_satisfaction_disloyal_eco.csv', index=False)
+            df_melted.to_csv(f'{local_path}services_satisfaction_disloyal_eco.csv', index=False)
             print(f'{local_path}services_satisfaction_disloyal_eco.csv LOADED')
         else:
-            means_df.to_csv(f'{local_path}services_satisfaction_disloyal_business.csv', index=False)
+            df_melted.to_csv(f'{local_path}services_satisfaction_disloyal_business.csv', index=False)
             print(f'{local_path}services_satisfaction_disloyal_business.csv LOADED')
 
 def flight_distrib(df, loyal, classe):
