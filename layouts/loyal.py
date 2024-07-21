@@ -14,9 +14,9 @@ travel_type_fig = travel_type_pie_chart(read_csv(f'{local_path}travel_type_distr
 travel_type_satisfaction_fig = travel_type_satisfaction_bar_chart(read_csv(f'{local_path}travel_type_satisfaction_distribution_loyal.csv'))
 business_class_satisfaction_fig = business_class_satisfaction_bar_chart(read_csv(f'{local_path}business_class_satisfaction_distribution_loyal.csv'))
 personal_class_satisfaction_fig = personal_class_satisfaction_bar_chart(read_csv(f'{local_path}personal_class_satisfaction_distribution.csv'))
-per_services_satisfaction_fig = per_services_satisfaction_bar_chart(read_csv(f'{local_path}services_satisfaction_loyal.csv'))
-flight_distance_fig = flight_distance_histogram(read_csv(f'{local_path}flight_distribution_loyal.csv'))
-flight_distance_satisfaction_fig = flight_distance_satisfaction_histogram(read_csv(f'{local_path}satisfaction_per_distance_loyal.csv'))
+per_services_satisfaction_fig = per_services_satisfaction_bar_chart(read_csv(f'{local_path}services_satisfaction_loyal.csv'), "")
+flight_distance_fig = flight_distance_histogram(read_csv(f'{local_path}flight_distribution_loyal.csv'), "")
+flight_distance_satisfaction_fig = flight_distance_satisfaction_histogram(read_csv(f'{local_path}satisfaction_per_distance_loyal.csv'), True)
 services_comparison_fig_list = services_comparison_graphs(read_csv(f'{local_path}services_satisfaction_per_distance_loyal.csv'))
 services_comparison_layout = create_services_comparison_layout(services_comparison_fig_list)
 
