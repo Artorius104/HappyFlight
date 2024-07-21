@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
 import pandas as pd
+from os import path, makedirs
 
 
 hdfs_address = "hdfs://localhost:9000/"
@@ -119,7 +120,7 @@ def business_satisfaction_per_class(df, loyal):
         class_satisfaction_distribution.to_csv(f'{local_path}business_class_satisfaction_distribution_disloyal.csv', index=False)
         print(f'{local_path}business_class_satisfaction_distribution_disloyal.csv LOADED')
 
-def other_satisfaction_per_class(df):
+def personal_satisfaction_per_class(df):
     filtered_df = df.filter(df["Type of Travel"] == "Personal Travel")
     class_satisfaction_distribution = filtered_df.groupBy("Class", "satisfaction").count().toPandas()
     class_satisfaction_distribution.to_csv(f'{local_path}personal_class_satisfaction_distribution.csv', index=False)
@@ -281,6 +282,8 @@ def satisfaction_per_distance_per_param(df, loyal):
 
 # MAIN FUNCTION
 def get_spark_analyses():
+    if not path.exists('csv'):
+        makedirs('csv')
     spark = SparkSession.builder \
         .appName("Airline Satisfaction Analysis") \
         .getOrCreate()
@@ -288,11 +291,14 @@ def get_spark_analyses():
     df = load_data(spark)
 
     # Distribution de la satisfaction
-    global_satisfaction(df)
+    if not path.exists('csv/satisfaction_distribution.csv'):
+        global_satisfaction(df)
     # Distribution des types de clients
-    global_client_type_distrib(df)
+    if not path.exists('csv/client_type_distribution.csv'):
+        global_client_type_distrib(df)
     # Distribution de l'âge
-    age_distrib(df)
+    if not path.exists('csv/age_distribution.csv'):
+        age_distrib(df)
     # Moyennes globales des notes
     df_pd = df.toPandas()
     rating_columns = [
@@ -301,38 +307,56 @@ def get_spark_analyses():
         'Leg room service', 'Baggage handling', 'Checkin service', 'Cleanliness',
         'Online boarding'
     ]
-    global_mean_notes(df_pd, rating_columns)
-    global_ecart_type(df_pd, rating_columns)
-    global_variance(df_pd, rating_columns)
+    if not path.exists('csv/global_means_notes.csv'):
+        global_mean_notes(df_pd, rating_columns)
+    if not path.exists('csv/ecart_type.csv'):
+        global_ecart_type(df_pd, rating_columns)
+    if not path.exists('csv/variance.csv'):
+        global_variance(df_pd, rating_columns)
 
     # Distribution de la majorité entre 20 ans et 60 ans
     df_age_filtered = df.filter((df.Age >= 20) & (df.Age <= 60))
-    age_filtered_distrib(df_age_filtered)
+    if not path.exists('csv/age_distribution_filtered.csv'):
+        age_filtered_distrib(df_age_filtered)
     # Répartition de la satisfaction (filtrée)
-    filtered_satisfaction(df_age_filtered)
+    if not path.exists('csv/filtered_satisfaction_distribution.csv'):
+        filtered_satisfaction(df_age_filtered)
     # Répartition des types de clients (filtrée)
-    filtered_client_type_distrib(df_age_filtered)
+    if not path.exists('csv/filtered_customer_type_distribution.csv'):
+        filtered_client_type_distrib(df_age_filtered)
     # Matrice de Corrélation
-    correlation_matrix(df)
+    if not path.exists('csv/correlation_matrix.csv'):
+        correlation_matrix(df)
 
     # CLIENTS LOYAUX
-    travel_type_distrib(df_age_filtered, True)
+    if not path.exists('csv/travel_type_distribution_loyal.csv'):
+        travel_type_distrib(df_age_filtered, True)
     df_loyal = df_age_filtered.filter(df_age_filtered["Customer Type"] == "Loyal Customer")
-    travel_type_satisfaction(df_loyal, True)
-    business_satisfaction_per_class(df_loyal, True)
-    other_satisfaction_per_class(df_loyal)
+    if not path.exists('csv/travel_type_satisfaction_distribution_loyal.csv'):
+        travel_type_satisfaction(df_loyal, True)
+    if not path.exists('csv/business_class_satisfaction_distribution_loyal.csv'):
+        business_satisfaction_per_class(df_loyal, True)
+    if not path.exists('csv/personal_class_satisfaction_distribution.csv'):
+        personal_satisfaction_per_class(df_loyal)
 
     df_loyal_eco = df_loyal.filter(df_loyal["Class"] == "Eco")
-    given_notes_per_services(df_loyal_eco, True, "eco")
-    flight_distrib(df_loyal_eco, True, "eco")
-    satisfaction_per_distance(df_loyal_eco, True)
-    satisfaction_per_distance_per_param(df_loyal_eco, True)
+    if not path.exists('csv/services_satisfaction_loyal.csv'):
+        given_notes_per_services(df_loyal_eco, True, "eco")
+    if not path.exists('csv/flight_distribution_loyal.csv'):
+        flight_distrib(df_loyal_eco, True, "eco")
+    if not path.exists('csv/satisfaction_per_distance_loyal.csv'):
+        satisfaction_per_distance(df_loyal_eco, True)
+    if not path.exists('csv/services_satisfaction_per_distance_loyal.csv'):
+        satisfaction_per_distance_per_param(df_loyal_eco, True)
 
     # CLIENTS NON LOYAUX
-    travel_type_distrib(df_age_filtered, False)
+    if not path.exists('csv/travel_type_distribution_disloyal.csv'):
+        travel_type_distrib(df_age_filtered, False)
     df_disloyal = df_age_filtered.filter(df_age_filtered["Customer Type"] == "disloyal Customer")
-    travel_type_satisfaction(df_disloyal, False)
-    business_satisfaction_per_class(df_disloyal, False)
+    if not path.exists('csv/travel_type_satisfaction_distribution_disloyal.csv'):
+        travel_type_satisfaction(df_disloyal, False)
+    if not path.exists('csv/business_class_satisfaction_distribution_disloyal.csv'):
+        business_satisfaction_per_class(df_disloyal, False)
 
     df_disloyal_eco = df_disloyal.filter(
         (df_disloyal["Type of Travel"] == "Business travel") &
@@ -342,17 +366,23 @@ def get_spark_analyses():
         (df_disloyal["Type of Travel"] == "Business travel") &
         (df_disloyal["Class"] == "Business")
     )
-    given_notes_per_services(df_disloyal_eco, False, "eco")
-    given_notes_per_services(df_disloyal_busi, False, "business")
-    flight_distrib(df_disloyal_eco, False, "eco")
-    flight_distrib(df_disloyal_busi, False, "business")
+    if not path.exists('csv/services_satisfaction_disloyal_eco.csv'):
+        given_notes_per_services(df_disloyal_eco, False, "eco")
+    if not path.exists('csv/services_satisfaction_disloyal_business.csv'):
+        given_notes_per_services(df_disloyal_busi, False, "business")
+    if not path.exists('csv/flight_distribution_disloyal_eco.csv'):
+        flight_distrib(df_disloyal_eco, False, "eco")
+    if not path.exists('csv/flight_distribution_disloyal_business.csv'):
+        flight_distrib(df_disloyal_busi, False, "business")
 
     df_disloyal_distance = df_disloyal_busi.filter(
         (df['Flight Distance'] >= 1100) &
         (df['Flight Distance'] <= 3000)
     )
-    satisfaction_per_distance(df_disloyal_distance, False)
-    satisfaction_per_distance_per_param(df_disloyal_distance, False)
+    if not path.exists('csv/satisfaction_per_distance_disloyal.csv'):
+        satisfaction_per_distance(df_disloyal_distance, False)
+    if not path.exists('csv/services_satisfaction_per_distance_disloyal.csv'):
+        satisfaction_per_distance_per_param(df_disloyal_distance, False)
 
     # Arrêter la session Spark
     print("*************************")
