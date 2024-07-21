@@ -36,7 +36,8 @@ footer = dbc.Container(
             html.P(
                 "© 2024 - Happy Flight",
                 className="text-center"
-            )
+            ),
+            style={"borderTop": "2px solid #C1C6CF"}
         )
     ),
     fluid=True,
