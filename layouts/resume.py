@@ -19,30 +19,66 @@ corr_matrix_fig = plot_correlation_heatmap(read_csv(f'{local_path}correlation_ma
 # PAGE DU RESUME
 layout_resume = dbc.Container(
     [
-        html.H1("Résumé", className="text-center"),
+        html.H1(
+            "Résumé",
+            className="text-center",
+            style={
+                "font-size": "48px",
+                "font-family": "Gotham, Tahoma, sans-serif",
+                "color": "#158cba"
+            },
+        ),
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(figure=satisfaction_fig), width=6),
-                dbc.Col(dcc.Graph(figure=customer_type_fig), width=6),
+                dbc.Col(
+                    dcc.Graph(figure=satisfaction_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
+                dbc.Col(
+                    dcc.Graph(figure=customer_type_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
             ],
             className="mb-4",
         ),
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(figure=age_fig), width=6),
-                dbc.Col(dcc.Graph(figure=age_filtered_fig), width=6),
+                dbc.Col(
+                    dcc.Graph(figure=age_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
+                dbc.Col(
+                    dcc.Graph(figure=age_filtered_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
             ],
             className="mb-4",
         ),
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(figure=satisfaction_filtered_fig), width=6),
-                dbc.Col(dcc.Graph(figure=customer_type_filtered_fig), width=6),
+                dbc.Col(
+                    dcc.Graph(figure=satisfaction_filtered_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
+                dbc.Col(
+                    dcc.Graph(figure=customer_type_filtered_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
             ],
             className="mb-4",
         ),
         dbc.Row(
-            dbc.Col(dcc.Graph(figure=corr_matrix_fig), width=12),
+            dbc.Col(
+                dcc.Graph(figure=corr_matrix_fig),
+                style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                width=12
+            ),
             className="mb-4",
         ),
     ],

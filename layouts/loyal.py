@@ -23,33 +23,69 @@ services_comparison_layout = create_services_comparison_layout(services_comparis
 # ANALYSES CLIENTS LOYAUX
 layout_loyal = dbc.Container(
     [
-        html.H1("Clients Loyaux", className="text-center"),
+        html.H1(
+            "Clients Loyaux",
+            className="text-center",
+            style={
+                "font-size": "48px",
+                "font-family": "Gotham, Tahoma, sans-serif",
+                "color": "#158cba"
+            },
+        ),
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(figure=travel_type_fig), width=6),
-                dbc.Col(dcc.Graph(figure=travel_type_satisfaction_fig), width=6),
+                dbc.Col(
+                    dcc.Graph(figure=travel_type_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
+                dbc.Col(
+                    dcc.Graph(figure=travel_type_satisfaction_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
             ],
             className="mb-4",
         ),
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(figure=business_class_satisfaction_fig), width=6),
-                dbc.Col(dcc.Graph(figure=personal_class_satisfaction_fig), width=6),
+                dbc.Col(
+                    dcc.Graph(figure=business_class_satisfaction_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
+                dbc.Col(
+                    dcc.Graph(figure=personal_class_satisfaction_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
             ],
             className="mb-4",
         ),
         dbc.Row(
-            dbc.Col(dcc.Graph(figure=per_services_satisfaction_fig), width=12),
+            dbc.Col(
+                dcc.Graph(figure=per_services_satisfaction_fig),
+                style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                width=12
+            ),
             className="mb-4",
         ),
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(figure=flight_distance_fig), width=6),
-                dbc.Col(dcc.Graph(figure=flight_distance_satisfaction_fig), width=6),
+                dbc.Col(
+                    dcc.Graph(figure=flight_distance_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
+                dbc.Col(
+                    dcc.Graph(figure=flight_distance_satisfaction_fig),
+                    style={"box-shadow": "10px 5px 5px #C1C6CF"},
+                    width=6
+                ),
             ],
             className="mb-4",
         ),
-        html.Div(services_comparison_layout)  # Utilisation de la mise en page dynamique
+        html.Div(services_comparison_layout)
     ],
     fluid=True,
 )
