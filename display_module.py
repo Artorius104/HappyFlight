@@ -1,7 +1,7 @@
 import plotly.graph_objs as go
 import plotly.express as px
 
-def satisfaction_pie_chart(df):
+def satisfaction_pie_chart(df, filtered):
     fig = go.Figure(
         data=[go.Pie(
             labels=df['satisfaction'],
@@ -10,14 +10,19 @@ def satisfaction_pie_chart(df):
             marker=dict(colors=['red', 'green'])
         )]
     )
-
-    fig.update_layout(
-        title="Répartition de la satisfaction en pourcentage",
-        annotations=[dict(text='Satisfaction', x=0.5, y=0.5, font_size=20, showarrow=False)]
-    )
+    if filtered is True:
+        fig.update_layout(
+            title="Répartition de la satisfaction (entre 20 et 60 ans)",
+            annotations=[dict(text='Satisfaction', x=0.5, y=0.5, font_size=20, showarrow=False)]
+        )
+    else:
+        fig.update_layout(
+            title="Répartition de la satisfaction",
+            annotations=[dict(text='Satisfaction', x=0.5, y=0.5, font_size=20, showarrow=False)]
+        )
     return fig
 
-def customer_type_pie_chart(df):
+def customer_type_pie_chart(df, filtered):
     fig = go.Figure(
         data=[go.Pie(
             labels=df['Customer Type'],
@@ -26,13 +31,19 @@ def customer_type_pie_chart(df):
             marker=dict(colors=['green', 'red'])
         )]
     )
-    fig.update_layout(
-        title="Répartition des types de clients",
-        annotations=[dict(text='Customer Type', x=0.5, y=0.5, font_size=20, showarrow=False)]
-    )
+    if filtered is True:
+        fig.update_layout(
+            title="Répartition des types de clients (entre 20 et 60 ans)",
+            annotations=[dict(text='Customer Type', x=0.5, y=0.5, font_size=20, showarrow=False)]
+        )
+    else:
+        fig.update_layout(
+            title="Répartition des types de clients",
+            annotations=[dict(text='Customer Type', x=0.5, y=0.5, font_size=20, showarrow=False)]
+        )
     return fig
 
-def age_distribution_chart(df):
+def age_distribution_chart(df, filtered):
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=df['Age'],
@@ -41,32 +52,22 @@ def age_distribution_chart(df):
         marker_color='blue',
         opacity=0.75
     ))
-
-    fig.update_layout(
-        title="Distribution de l'âge des clients",
-        xaxis_title="Âge",
-        yaxis_title="Nombre de clients",
-        bargap=0.2,
-        bargroupgap=0.1
-    )
-    return fig
-
-def age_distribution_filtered_chart(df):
-    fig = go.Figure()
-    fig.add_trace(go.Histogram(
-        x=df['Age'],
-        nbinsx=30,
-        name='Distribution de l\'âge (20-60 ans)',
-        marker_color='green',
-        opacity=0.75
-    ))
-    fig.update_layout(
-        title="Distribution de l'âge des clients (entre 20 et 60 ans)",
-        xaxis_title="Âge",
-        yaxis_title="Nombre de clients",
-        bargap=0.2,
-        bargroupgap=0.1
-    )
+    if filtered is True:
+        fig.update_layout(
+            title="Distribution de l'âge des clients (entre 20 et 60 ans)",
+            xaxis_title="Âge",
+            yaxis_title="Nombre de clients",
+            bargap=0.2,
+            bargroupgap=0.1
+        )
+    else:
+        fig.update_layout(
+            title="Distribution de l'âge des clients",
+            xaxis_title="Âge",
+            yaxis_title="Nombre de clients",
+            bargap=0.2,
+            bargroupgap=0.1
+        )
     return fig
 
 def plot_correlation_heatmap(df_pd):
@@ -106,7 +107,7 @@ def travel_type_pie_chart(df):
         )]
     )
     fig.update_layout(
-        title="Répartition des types de voyage parmi les clients loyaux",
+        title="Répartition types de voyage (clients loyaux)",
         annotations=[dict(text='Type of Travel', x=0.5, y=0.5, font_size=20, showarrow=False)]
     )
     return fig
@@ -130,7 +131,7 @@ def travel_type_satisfaction_bar_chart(df):
     fig = go.Figure(data=data)
     fig.update_layout(
         barmode='group',
-        title="Satisfaction des clients loyaux pour chaque type de voyage",
+        title="Satisfaction par type de voyage (clients loyaux)",
         xaxis_title="Type de voyage",
         yaxis_title="Nombre de clients",
         legend_title="Satisfaction"
@@ -157,7 +158,7 @@ def business_class_satisfaction_bar_chart(df):
     fig = go.Figure(data=data)
     fig.update_layout(
         barmode='stack',
-        title="Répartition des classes de voyage et satisfaction pour les clients loyaux et qui voyagent pour affaires",
+        title="Satisfaction pour les clients qui voyagent pour affaires (clients loyaux)",
         xaxis_title="Classe de voyage",
         yaxis_title="Nombre de clients",
         legend_title="Satisfaction"
@@ -185,7 +186,7 @@ def personal_class_satisfaction_bar_chart(df):
     fig = go.Figure(data=data)
     fig.update_layout(
         barmode='stack',
-        title="Répartition des classes de voyage et satisfaction pour les clients loyaux et qui voyagent pour autre chose",
+        title="Satisfaction pour les clients qui voyagent pour autre chose (clients loyaux)",
         xaxis_title="Classe de voyage",
         yaxis_title="Nombre de clients",
         legend_title="Satisfaction"
@@ -193,7 +194,7 @@ def personal_class_satisfaction_bar_chart(df):
 
     return fig
 
-def per_services_satisfaction_bar_chart(df):
+def per_services_satisfaction_bar_chart(df, classe):
     fig = go.Figure()
 
     for satisfaction in df['Satisfaction'].unique():
@@ -206,19 +207,35 @@ def per_services_satisfaction_bar_chart(df):
                 marker_color='green' if satisfaction == 'Satisfied' else 'red'
             )
         )
-
-    fig.update_layout(
-        title="Moyenne des notes par paramètre pour les clients satisfaits et insatisfaits",
-        xaxis_title="Paramètre",
-        yaxis_title="Note moyenne",
-        barmode='group',
-        xaxis_tickangle=-75
-    )
+    if classe == "eco":
+        fig.update_layout(
+            title="Moyenne des notes par paramètre pour les clients non-loyaux en Eco",
+            xaxis_title="Paramètre",
+            yaxis_title="Note moyenne",
+            barmode='group',
+            xaxis_tickangle=-75
+        )
+    elif classe == "business":
+        fig.update_layout(
+            title="Moyenne des notes par paramètre pour les clients non-loyaux en Business",
+            xaxis_title="Paramètre",
+            yaxis_title="Note moyenne",
+            barmode='group',
+            xaxis_tickangle=-75
+        )
+    else:
+        fig.update_layout(
+            title="Moyenne des notes par paramètre pour les clients loyaux",
+            xaxis_title="Paramètre",
+            yaxis_title="Note moyenne",
+            barmode='group',
+            xaxis_tickangle=-75
+        )
 
     return fig
 
 
-def flight_distance_histogram(df):
+def flight_distance_histogram(df, classe):
     # Créer l'histogramme de la distribution des distances de vols
     fig = go.Figure()
 
@@ -245,17 +262,34 @@ def flight_distance_histogram(df):
     )
 
     # Mise à jour de la mise en page du graphique
-    fig.update_layout(
-        title="Distribution des distances de vols des clients loyaux",
-        xaxis_title="Distance de vol (km)",
-        yaxis_title="Nombre de vols",
-        barmode='overlay',
-        legend_title="Type de données"
-    )
+    if classe == "eco":
+        fig.update_layout(
+            title="Distribution des distances de vols des clients non-loyaux en Eco",
+            xaxis_title="Distance de vol (km)",
+            yaxis_title="Nombre de vols",
+            barmode='overlay',
+            legend_title="Type de données"
+        )
+    elif classe == "business":
+        fig.update_layout(
+            title="Distribution des distances de vols des clients non-loyaux en Business",
+            xaxis_title="Distance de vol (km)",
+            yaxis_title="Nombre de vols",
+            barmode='overlay',
+            legend_title="Type de données"
+        )
+    else:
+        fig.update_layout(
+            title="Distribution des distances de vols des clients loyaux",
+            xaxis_title="Distance de vol (km)",
+            yaxis_title="Nombre de vols",
+            barmode='overlay',
+            legend_title="Type de données"
+        )
 
     return fig
 
-def flight_distance_satisfaction_histogram(df):
+def flight_distance_satisfaction_histogram(df, loyal):
     fig = go.Figure()
 
     fig.add_trace(
@@ -270,12 +304,20 @@ def flight_distance_satisfaction_histogram(df):
     )
 
     # Mise à jour de la mise en page du graphique
-    fig.update_layout(
-        title="Satisfaction en pourcentage des clients loyaux selon la distance de vol",
-        xaxis_title="Catégorie de distance de vol (km)",
-        yaxis_title="Pourcentage de satisfaits",
-        xaxis_tickangle=-45
-    )
+    if loyal is True:
+        fig.update_layout(
+            title="Satisfaction des clients loyaux selon la distance de vol",
+            xaxis_title="Catégorie de distance de vol (km)",
+            yaxis_title="Pourcentage de satisfaits",
+            xaxis_tickangle=-45
+        )
+    else:
+        fig.update_layout(
+            title="Satisfaction des clients non-loyaux selon la distance de vol",
+            xaxis_title="Catégorie de distance de vol (km)",
+            yaxis_title="Pourcentage de satisfaits",
+            xaxis_tickangle=-45
+        )
 
     # Ajouter les pourcentages au-dessus de chaque point
     for i in range(len(df)):
