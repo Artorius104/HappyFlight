@@ -291,7 +291,7 @@ def flight_distance_satisfaction_histogram(df):
     return fig
 
 def services_comparison_graphs(avg_scores):
-    fig_dicts = []
+    fig_list = []
     params = [
         "Seat comfort", "Departure/Arrival time convenient", "Food and drink", "Gate location",
         "Inflight wifi service", "Inflight entertainment", "Online support", "Ease of Online booking",
@@ -312,7 +312,7 @@ def services_comparison_graphs(avg_scores):
         fig = go.Figure()
 
         for satisfaction in ['satisfied', 'dissatisfied']:
-            subset = avg_scores_melted[avg_scores_melted['Satisfaction'] == satisfaction]
+            subset = avg_scores_melted[avg_scores_melted['Satisfaction'] == f'{param}_{satisfaction}']
             fig.add_trace(
                 go.Bar(
                     x=subset['Distance Bin'],
@@ -343,6 +343,6 @@ def services_comparison_graphs(avg_scores):
                     align='center'
                 )
 
-        fig_dicts.append(fig)
+        fig_list.append(fig)
 
-    return fig_dicts
+    return fig_list
