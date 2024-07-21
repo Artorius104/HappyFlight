@@ -1,7 +1,7 @@
 import plotly.graph_objs as go
 import plotly.express as px
 
-def generate_satisfaction_pie(df):
+def satisfaction_pie_chart(df):
     fig = go.Figure(
         data=[go.Pie(
             labels=df['satisfaction'],
@@ -15,8 +15,9 @@ def generate_satisfaction_pie(df):
         title="Répartition de la satisfaction en pourcentage",
         annotations=[dict(text='Satisfaction', x=0.5, y=0.5, font_size=20, showarrow=False)]
     )
+    return fig
 
-def generate_customer_type_pie(df):
+def customer_type_pie_chart(df):
     fig = go.Figure(
         data=[go.Pie(
             labels=df['Customer Type'],
@@ -31,7 +32,7 @@ def generate_customer_type_pie(df):
     )
     return fig
 
-def generate_age_distribution_chart(df):
+def age_distribution_chart(df):
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=df['Age'],
@@ -50,7 +51,7 @@ def generate_age_distribution_chart(df):
     )
     return fig
 
-def generate_age_distribution_filtered_chart(df):
+def age_distribution_filtered_chart(df):
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=df['Age'],
@@ -95,7 +96,7 @@ def plot_correlation_heatmap(df_pd):
 
     return fig
 
-def generate_travel_type_pie_chart(df):
+def travel_type_pie_chart(df):
     fig = go.Figure(
         data=[go.Pie(
             labels=df['Type of Travel'],
@@ -110,7 +111,7 @@ def generate_travel_type_pie_chart(df):
     )
     return fig
 
-def generate_travel_satisfaction_bar_chart(df):
+def travel_type_satisfaction_bar_chart(df):
     types_of_travel = df['Type of Travel'].unique()
     satisfaction_levels = df['Satisfaction'].unique()
 
@@ -136,18 +137,18 @@ def generate_travel_satisfaction_bar_chart(df):
     )
     return fig
 
-def generate_business_class_satisfaction_bar_chart(df):
+def business_class_satisfaction_bar_chart(df):
     classes = df['Class'].unique()
-    satisfaction_levels = df['Satisfaction'].unique()
+    satisfaction_levels = df['satisfaction'].unique()
 
     data = []
 
     for satisfaction in satisfaction_levels:
-        filtered_df = df[df['Satisfaction'] == satisfaction]
+        filtered_df = df[df['satisfaction'] == satisfaction]
         data.append(
             go.Bar(
                 x=filtered_df['Class'],
-                y=filtered_df['Count'],
+                y=filtered_df['count'],
                 name=satisfaction,
                 marker_color='green' if satisfaction == 'satisfied' else 'red'
             )
@@ -164,18 +165,18 @@ def generate_business_class_satisfaction_bar_chart(df):
 
     return fig
 
-def generate_personal_class_satisfaction_bar_chart(df):
+def personal_class_satisfaction_bar_chart(df):
     classes = df['Class'].unique()
-    satisfaction_levels = df['Satisfaction'].unique()
+    satisfaction_levels = df['satisfaction'].unique()
 
     data = []
 
     for satisfaction in satisfaction_levels:
-        filtered_df = df[df['Satisfaction'] == satisfaction]
+        filtered_df = df[df['satisfaction'] == satisfaction]
         data.append(
             go.Bar(
                 x=filtered_df['Class'],
-                y=filtered_df['Count'],
+                y=filtered_df['count'],
                 name=satisfaction,
                 marker_color='green' if satisfaction == 'satisfied' else 'red'
             )
@@ -192,7 +193,7 @@ def generate_personal_class_satisfaction_bar_chart(df):
 
     return fig
 
-def generate_per_services_satisfaction_bar_chart(df):
+def per_services_satisfaction_bar_chart(df):
     # Préparer les données pour le graphique
     df_melted = df.melt(
         id_vars='Parameter',
@@ -226,7 +227,7 @@ def generate_per_services_satisfaction_bar_chart(df):
     return fig
 
 
-def generate_flight_distance_histogram(df):
+def flight_distance_histogram(df):
     # Créer l'histogramme de la distribution des distances de vols
     fig = go.Figure()
 
@@ -263,13 +264,13 @@ def generate_flight_distance_histogram(df):
 
     return fig
 
-def generate_flight_distance_satisfaction_histogram(df):
+def flight_distance_satisfaction_histogram(df):
     fig = go.Figure()
 
     fig.add_trace(
         go.Scatter(
             x=df['Distance Bin'],
-            y=df[0],
+            y=df['Percentage'],
             mode='lines+markers',
             name='Satisfaction',
             line=dict(color='orange'),
@@ -289,8 +290,8 @@ def generate_flight_distance_satisfaction_histogram(df):
     for i in range(len(df)):
         fig.add_annotation(
             x=df['Distance Bin'][i],
-            y=df[0][i],
-            text=f'{df[0][i]:.1f}%',
+            y=df['Percentage'][i],
+            text=f'{df['Percentage'][i]:.1f}%',
             showarrow=False,
             font=dict(size=12, color='black'),
             align='center'
@@ -298,8 +299,14 @@ def generate_flight_distance_satisfaction_histogram(df):
 
     return fig
 
-def generate_comparison_graphs(avg_scores, params):
+def services_comparison_graphs(avg_scores):
     fig_dicts = []
+    params = [
+        "Seat comfort", "Departure/Arrival time convenient", "Food and drink", "Gate location",
+        "Inflight wifi service", "Inflight entertainment", "Online support", "Ease of Online booking",
+        "On-board service", "Leg room service", "Baggage handling", "Checkin service", "Cleanliness",
+        "Online boarding"
+    ]
 
     for param in params:
         # Préparer les données pour le graphique

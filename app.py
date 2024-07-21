@@ -1,16 +1,23 @@
 from dash import Dash, html, Output, Input, dcc, callback_context, no_update
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
+from os import path, makedirs
+
+# RUN ANALYSES
+from data_processing import get_spark_analyses
+if not path.exists('csv'):
+        makedirs('csv')
+get_spark_analyses()
+
+# APP INITIALISATION
+app = Dash(__name__, external_stylesheets=[dbc.themes.LUMEN])
+app.title = "HF Dashboard"
 
 # Import des layouts
 from layouts.resume import layout_resume
 from layouts.loyal import layout_loyal
 from layouts.non_loyal import layout_non_loyal
 
-
-# APP INITIALISATION
-app = Dash(__name__, external_stylesheets=[dbc.themes.LUMEN])
-app.title = "HF Dashboard"
 
 # BARRE DE NAVIGATION
 navbar = dbc.NavbarSimple(

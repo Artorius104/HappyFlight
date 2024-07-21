@@ -22,45 +22,54 @@ def global_satisfaction(df):
     total_count = satisfaction_dist['count'].sum()
     satisfaction_dist['percentage'] = (satisfaction_dist['count'] / total_count) * 100
     satisfaction_dist.to_csv(f'{local_path}satisfaction_distribution.csv', index=False)
+    print(f'{local_path}satisfaction_distribution.csv LOADED')
 
 def global_client_type_distrib(df):
     customer_type_dist = df.groupBy("Customer Type").count().toPandas()
     total_count = customer_type_dist['count'].sum()
     customer_type_dist['percentage'] = (customer_type_dist['count'] / total_count) * 100
     customer_type_dist.to_csv(f'{local_path}client_type_distribution.csv', index=False)
+    print(f'{local_path}client_type_distribution.csv LOADED')
 
 def age_distrib(df):
     age_dist = df.select("Age").toPandas()
     age_dist.to_csv(f'{local_path}age_distribution.csv', index=False)
+    print(f'{local_path}age_distribution.csv LOADED')
 
 def global_mean_notes(df, rating_columns):
     mean_ratings = df[rating_columns].mean()
     mean_ratings_sorted = mean_ratings.sort_values(ascending=True)
     mean_ratings_sorted.to_csv(f'{local_path}global_means_notes.csv', index=False)
+    print(f'{local_path}global_means_notes.csv LOADED')
 
 def global_ecart_type(df, rating_columns):
     std_devs = df[rating_columns].std()
     std_devs.to_csv(f'{local_path}ecart_type.csv', index=False)
+    print(f'{local_path}ecart_type.csv LOADED')
 
 def global_variance(df, rating_columns):
     std_devs = df[rating_columns].var()
     std_devs.to_csv(f'{local_path}variance.csv', index=False)
+    print(f'{local_path}variance.csv LOADED')
 
 def age_filtered_distrib(df_age_filtered):
     age_dist_filtered = df_age_filtered.select("Age").toPandas()
     age_dist_filtered.to_csv(f'{local_path}age_distribution_filtered.csv', index=False)
+    print(f'{local_path}age_distribution_filtered.csv LOADED')
 
 def filtered_satisfaction(df_age_filtered):
     filtered_satisfaction_dist = df_age_filtered.groupBy("satisfaction").count().toPandas()
     total_count = filtered_satisfaction_dist['count'].sum()
     filtered_satisfaction_dist['percentage'] = (filtered_satisfaction_dist['count'] / total_count) * 100
     filtered_satisfaction_dist.to_csv(f'{local_path}filtered_satisfaction_distribution.csv', index=False)
+    print(f'{local_path}filtered_satisfaction_distribution.csv LOADED')
 
 def filtered_client_type_distrib(df_age_filtered):
     filtered_customer_type_dist = df_age_filtered.groupBy("Customer Type").count().toPandas()
     total_count = filtered_customer_type_dist['count'].sum()
     filtered_customer_type_dist['percentage'] = (filtered_customer_type_dist['count'] / total_count) * 100
     filtered_customer_type_dist.to_csv(f'{local_path}filtered_customer_type_distribution.csv', index=False)
+    print(f'{local_path}filtered_customer_type_distribution.csv LOADED')
 
 def correlation_matrix(df):
     numeric_cols = [
@@ -72,6 +81,7 @@ def correlation_matrix(df):
     ]
     df_pd = df.select(numeric_cols).toPandas()
     df_pd.to_csv(f'{local_path}correlation_matrix.csv', index=False)
+    print(f'{local_path}correlation_matrix.csv LOADED')
 
 def travel_type_distrib(df, loyal):
     if loyal is True:
@@ -84,32 +94,36 @@ def travel_type_distrib(df, loyal):
     travel_type_dist['percentage'] = (travel_type_dist['count'] / total_count) * 100
     if loyal is True:
         travel_type_dist.to_csv(f'{local_path}travel_type_distribution_loyal.csv', index=False)
+        print(f'{local_path}travel_type_distribution_loyal.csv LOADED')
     else:
         travel_type_dist.to_csv(f'{local_path}travel_type_distribution_disloyal.csv', index=False)
+        print(f'{local_path}travel_type_distribution_disloyal.csv LOADED')
 
 def travel_type_satisfaction(df, loyal):
     travel_satisfaction_dist = df.groupBy("Type of Travel", "satisfaction").count().toPandas()
     travel_satisfaction_dist.columns = ['Type of Travel', 'Satisfaction', 'Count']
     if loyal is True:
         travel_satisfaction_dist.to_csv(f'{local_path}travel_type_satisfaction_distribution_loyal.csv', index=False)
+        print(f'{local_path}travel_type_satisfaction_distribution_loyal.csv LOADED')
     else:
         travel_satisfaction_dist.to_csv(f'{local_path}travel_type_satisfaction_distribution_disloyal.csv', index=False)
+        print(f'{local_path}travel_type_satisfaction_distribution_disloyal.csv LOADED')
 
 def business_satisfaction_per_class(df, loyal):
     filtered_df = df.filter(df["Type of Travel"] == "Business travel")
     class_satisfaction_distribution = filtered_df.groupBy("Class", "satisfaction").count().toPandas()
     if loyal is True:
         class_satisfaction_distribution.to_csv(f'{local_path}business_class_satisfaction_distribution_loyal.csv', index=False)
+        print(f'{local_path}business_class_satisfaction_distribution_loyal.csv LOADED')
     else:
         class_satisfaction_distribution.to_csv(f'{local_path}business_class_satisfaction_distribution_disloyal.csv', index=False)
+        print(f'{local_path}business_class_satisfaction_distribution_disloyal.csv LOADED')
 
-def other_satisfaction_per_class(df, loyal):
+def other_satisfaction_per_class(df):
     filtered_df = df.filter(df["Type of Travel"] == "Personal Travel")
     class_satisfaction_distribution = filtered_df.groupBy("Class", "satisfaction").count().toPandas()
-    if loyal is True:
-        class_satisfaction_distribution.to_csv(f'{local_path}personal_class_satisfaction_distribution_loyal.csv', index=False)
-    else:
-        class_satisfaction_distribution.to_csv(f'{local_path}personal_class_satisfaction_distribution_disloyal.csv', index=False)
+    class_satisfaction_distribution.to_csv(f'{local_path}personal_class_satisfaction_distribution.csv', index=False)
+    print(f'{local_path}personal_class_satisfaction_distribution.csv LOADED')
 
 def given_notes_per_services(df, loyal, classe):
     # Séparer les clients satisfaits et insatisfaits
@@ -139,21 +153,27 @@ def given_notes_per_services(df, loyal, classe):
     means_df = pd.merge(satisfied_means, dissatisfied_means, on='Parameter')
     if loyal is True:
         means_df.to_csv(f'{local_path}services_satisfaction_loyal.csv', index=False)
+        print(f'{local_path}services_satisfaction_loyal.csv LOADED')
     else:
         if classe == "eco":
             means_df.to_csv(f'{local_path}services_satisfaction_disloyal_eco.csv', index=False)
+            print(f'{local_path}services_satisfaction_disloyal_eco.csv LOADED')
         else:
             means_df.to_csv(f'{local_path}services_satisfaction_disloyal_business.csv', index=False)
+            print(f'{local_path}services_satisfaction_disloyal_business.csv LOADED')
 
 def flight_distrib(df, loyal, classe):
     distance_dist = df.select("Flight Distance").toPandas()
     if loyal is True:
         distance_dist.to_csv(f'{local_path}flight_distribution_loyal.csv', index=False)
+        print(f'{local_path}flight_distribution_loyal.csv LOADED')
     else:
         if classe == "eco":
             distance_dist.to_csv(f'{local_path}flight_distribution_disloyal_eco.csv', index=False)
+            print(f'{local_path}flight_distribution_disloyal_eco.csv LOADED')
         else:
             distance_dist.to_csv(f'{local_path}flight_distribution_disloyal_business.csv', index=False)
+        print(f'{local_path}flight_distribution_disloyal_business.csv LOADED')
 
 def satisfaction_per_distance(df, loyal):
     # On garde la distance de vol et la satisfaction
@@ -184,11 +204,13 @@ def satisfaction_per_distance(df, loyal):
 
     # Convertir en DataFrame Pandas pour la visualisation
     satisfaction_percentage = satisfaction_percentage.reset_index()
+    satisfaction_percentage.rename(columns={0: 'Percentage'}, inplace=True)
     if loyal is True:
         satisfaction_percentage.to_csv(f'{local_path}satisfaction_per_distance_loyal.csv', index=False)
+        print(f'{local_path}satisfaction_per_distance_loyal.csv LOADED')
     else:
         satisfaction_percentage.to_csv(f'{local_path}satisfaction_per_distance_disloyal.csv', index=False)
-
+        print(f'{local_path}satisfaction_per_distance_disloyal.csv LOADED')
 
 def satisfaction_per_distance_per_param(df, loyal):
     # Convertir en DataFrame Pandas pour faciliter la manipulation
@@ -246,9 +268,10 @@ def satisfaction_per_distance_per_param(df, loyal):
     )
     if loyal is True:
         avg_scores.to_csv(f'{local_path}services_satisfaction_per_distance_loyal.csv', index=False)
+        print(f'{local_path}services_satisfaction_per_distance_loyal.csv LOADED')
     else:
         avg_scores.to_csv(f'{local_path}services_satisfaction_per_distance_disloyal.csv', index=False)
-
+        print(f'{local_path}services_satisfaction_per_distance_disloyal.csv LOADED')
 
 # MAIN FUNCTION
 def get_spark_analyses():
@@ -291,7 +314,7 @@ def get_spark_analyses():
     df_loyal = df_age_filtered.filter(df_age_filtered["Customer Type"] == "Loyal Customer")
     travel_type_satisfaction(df_loyal, True)
     business_satisfaction_per_class(df_loyal, True)
-    other_satisfaction_per_class(df_loyal, True)
+    other_satisfaction_per_class(df_loyal)
 
     df_loyal_eco = df_loyal.filter(df_loyal["Class"] == "Eco")
     given_notes_per_services(df_loyal_eco, True, "eco")
@@ -326,5 +349,8 @@ def get_spark_analyses():
     satisfaction_per_distance_per_param(df_disloyal_distance, False)
 
     # Arrêter la session Spark
+    print("*************************")
+    print("ANALYSES COMPLETED")
+    print("*************************")
     spark.stop()
     # return satisfaction_dist
