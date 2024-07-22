@@ -1,260 +1,470 @@
-from pyspark.sql import SparkSession
+from os import path, listdir
+import shutil
+
+from pyspark.sql import SparkSession, DataFrame, Row
+from pyspark.sql.functions import col, round, sum, count, mean, when
 import pandas as pd
-from os import path, makedirs
+
+from utils_data import create_folder, load_data, save_dataframe
 
 
-hdfs_address = "hdfs://localhost:9000/"
-local_path = "csv/"
+def satisfaction_distrib(df: DataFrame, filtered: bool, local_path: str) -> None:
+    """
+    Process data to get satisfaction distribution into a CSV file
 
-# FONCTIONS UTILITAIRES SPARK
-def load_data(spark):
-    # Lire le fichier CSV depuis HDFS
-    df = spark.read.csv(
-        f'{hdfs_address}airline_data/Airline_customer_satisfaction.csv',
-        header=True,
-        inferSchema=True
+    Args:
+        df (DataFrame): The Spark dataframe.
+        filtered (bool): If the dataframe has been filtered.
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
+    # Grouper par la colonne 'satisfaction'
+    satisfaction_dist = (
+        df.groupBy("satisfaction")
+        .agg(count("*").alias("count"))
     )
-    print("ZER GOOD")
+    # Compter le nombre d'occurences
+    total_count = satisfaction_dist.agg(sum("count")).collect()[0][0]
+    # Ajouter une colonne pour les pourcentages
+    satisfaction_dist = satisfaction_dist.withColumn(
+        "percentage",
+        round((col("count") / total_count) * 100, 2)
+    )
 
-    return df
+    if filtered is not True:
+        save_dataframe(satisfaction_dist, f'{local_path}satisfaction_distribution')
+    else:
+        save_dataframe(satisfaction_dist, f'{local_path}filtered_satisfaction_distribution')
 
-def global_satisfaction(df):
-    satisfaction_dist = df.groupBy("satisfaction").count().toPandas()
-    total_count = satisfaction_dist['count'].sum()
-    satisfaction_dist['percentage'] = (satisfaction_dist['count'] / total_count) * 100
-    satisfaction_dist.to_csv(f'{local_path}satisfaction_distribution.csv', index=False)
-    print(f'{local_path}satisfaction_distribution.csv LOADED')
+def client_type_distrib(df: DataFrame, filtered: bool, local_path: str):
+    """
+    Process data to get client type distribution into a CSV file
 
-def global_client_type_distrib(df):
-    customer_type_dist = df.groupBy("Customer Type").count().toPandas()
-    total_count = customer_type_dist['count'].sum()
-    customer_type_dist['percentage'] = (customer_type_dist['count'] / total_count) * 100
-    customer_type_dist.to_csv(f'{local_path}client_type_distribution.csv', index=False)
-    print(f'{local_path}client_type_distribution.csv LOADED')
+    Args:
+        df (DataFrame): The Spark dataframe.
+        filtered (bool): If the dataframe has been filtered.
+        local_path (str): The path to save the CSV file.
 
-def age_distrib(df):
-    age_dist = df.select("Age").toPandas()
-    age_dist.to_csv(f'{local_path}age_distribution.csv', index=False)
-    print(f'{local_path}age_distribution.csv LOADED')
+    Returns:
+        None
+    """
+    # Grouper par la colonne 'Customer Type'
+    customer_type_dist = (
+        df.groupBy("Customer Type")
+        .agg(count("*").alias("count"))
+    )
+    # Compter le nombre d'occurences
+    total_count = customer_type_dist.agg(sum("count")).collect()[0][0]
+    # Ajouter une colonne pour les pourcentages
+    customer_type_dist = customer_type_dist.withColumn(
+        "percentage",
+        round((col("count") / total_count) * 100, 2)
+    )
 
-def global_mean_notes(df, rating_columns):
+    if filtered is not True:
+        save_dataframe(customer_type_dist, f'{local_path}client_type_distribution')
+    else:
+        save_dataframe(customer_type_dist, f'{local_path}filtered_customer_type_distribution')
+
+def age_distrib(df: DataFrame, filtered: bool, local_path: str):
+    """
+    Process data to get age distribution into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        filtered (bool): If the dataframe has been filtered.
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
+    age_dist = df.select("Age")
+    # Calculer la distribution d'âge (compter les occurrences de chaque âge)
+    # age_distribution = age_dist.groupBy("Age").count()
+
+    if filtered is not True:
+        save_dataframe(age_dist, f'{local_path}age_distribution')
+    else:
+        save_dataframe(age_dist, f'{local_path}age_distribution_filtered')
+
+def global_mean_notes(df, rating_columns, local_path):
     mean_ratings = df[rating_columns].mean()
     mean_ratings_sorted = mean_ratings.sort_values(ascending=True)
     mean_ratings_sorted.to_csv(f'{local_path}global_means_notes.csv', index=False)
     print(f'{local_path}global_means_notes.csv LOADED')
 
-def global_ecart_type(df, rating_columns):
+def global_ecart_type(df, rating_columns, local_path):
     std_devs = df[rating_columns].std()
     std_devs.to_csv(f'{local_path}ecart_type.csv', index=False)
     print(f'{local_path}ecart_type.csv LOADED')
 
-def global_variance(df, rating_columns):
+def global_variance(df, rating_columns, local_path):
     std_devs = df[rating_columns].var()
     std_devs.to_csv(f'{local_path}variance.csv', index=False)
     print(f'{local_path}variance.csv LOADED')
 
-def age_filtered_distrib(df_age_filtered):
-    age_dist_filtered = df_age_filtered.select("Age").toPandas()
-    age_dist_filtered.to_csv(f'{local_path}age_distribution_filtered.csv', index=False)
-    print(f'{local_path}age_distribution_filtered.csv LOADED')
+def correlation_matrix(df: DataFrame, numeric_cols: list[str], local_path: str, spark: SparkSession):
+    """
+    Process global data to get correlation matrix into a CSV file
 
-def filtered_satisfaction(df_age_filtered):
-    filtered_satisfaction_dist = df_age_filtered.groupBy("satisfaction").count().toPandas()
-    total_count = filtered_satisfaction_dist['count'].sum()
-    filtered_satisfaction_dist['percentage'] = (filtered_satisfaction_dist['count'] / total_count) * 100
-    filtered_satisfaction_dist.to_csv(f'{local_path}filtered_satisfaction_distribution.csv', index=False)
-    print(f'{local_path}filtered_satisfaction_distribution.csv LOADED')
+    Args:
+        df (DataFrame): The Spark dataframe.
+        numeric_cols (list[str]): Columns with numeric values.
+        local_path (str): The path to save the CSV file.
+        spark (SparkSession): The Spark session.
 
-def filtered_client_type_distrib(df_age_filtered):
-    filtered_customer_type_dist = df_age_filtered.groupBy("Customer Type").count().toPandas()
-    total_count = filtered_customer_type_dist['count'].sum()
-    filtered_customer_type_dist['percentage'] = (filtered_customer_type_dist['count'] / total_count) * 100
-    filtered_customer_type_dist.to_csv(f'{local_path}filtered_customer_type_distribution.csv', index=False)
-    print(f'{local_path}filtered_customer_type_distribution.csv LOADED')
+    Returns:
+        None
+    """
+    # Créer une matrice de corrélation en PySpark
+    correlation_matrix = {}
+    for col1 in numeric_cols:
+        correlation_matrix[col1] = {}
+        for col2 in numeric_cols:
+            corr_value = df.stat.corr(col1, col2)
+            correlation_matrix[col1][col2] = corr_value
 
-def correlation_matrix(df):
-    numeric_cols = [
-        'Age', 'Flight Distance', 'Seat comfort', 'Departure/Arrival time convenient',
-        'Food and drink', 'Gate location', 'Inflight wifi service', 'Inflight entertainment',
-        'Online support', 'Ease of Online booking', 'On-board service', 'Leg room service',
-        'Baggage handling', 'Checkin service', 'Cleanliness', 'Online boarding',
-        'Departure Delay in Minutes', 'Arrival Delay in Minutes'
-    ]
-    df_pd = df.select(numeric_cols).toPandas()
-    df_pd.to_csv(f'{local_path}correlation_matrix.csv', index=False)
-    print(f'{local_path}correlation_matrix.csv LOADED')
+    # Convertir la matrice de corrélations en liste de Row
+    rows = []
+    for col1 in numeric_cols:
+        for col2 in numeric_cols:
+            corr_value = correlation_matrix[col1][col2]
+            rows.append(Row(col1=col1, col2=col2, correlation=corr_value))
 
-def travel_type_distrib(df, loyal):
+    # Créer un DataFrame PySpark à partir de la liste de Row
+    correlation_df = spark.createDataFrame(rows)
+    # # Convertir la matrice de corrélation en DataFrame Pandas pour la visualisation
+    # correlation_df = pd.DataFrame(correlation_matrix)
+    save_dataframe(correlation_df, f'{local_path}correlation_matrix')
+
+def travel_type_distrib(df, loyal, local_path):
+    """
+    Process data to get the Travel Type distribution into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        loyal (bool): To study loyal or non-loyal clients.
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
     if loyal is True:
         df_filtered = df.filter(df["Customer Type"] == "Loyal Customer")
     else:
         df_filtered = df.filter(df["Customer Type"] == "disloyal Customer")
 
-    travel_type_dist = df_filtered.groupBy("Type of Travel").count().toPandas()
-    total_count = travel_type_dist['count'].sum()
-    travel_type_dist['percentage'] = (travel_type_dist['count'] / total_count) * 100
-    if loyal is True:
-        travel_type_dist.to_csv(f'{local_path}travel_type_distribution_loyal.csv', index=False)
-        print(f'{local_path}travel_type_distribution_loyal.csv LOADED')
-    else:
-        travel_type_dist.to_csv(f'{local_path}travel_type_distribution_disloyal.csv', index=False)
-        print(f'{local_path}travel_type_distribution_disloyal.csv LOADED')
+    # Grouper par la colonne 'Type of Travel'
+    travel_type_dist = (
+        df.groupBy("Type of Travel")
+        .agg(count("*").alias("count"))
+    )
+    # Compter le nombre d'occurences
+    total_count = travel_type_dist.agg(sum("count")).collect()[0][0]
+    # Ajouter une colonne pour les pourcentages
+    travel_type_dist = travel_type_dist.withColumn(
+        "percentage",
+        round((col("count") / total_count) * 100, 2)
+    )
 
-def travel_type_satisfaction(df, loyal):
-    travel_satisfaction_dist = df.groupBy("Type of Travel", "satisfaction").count().toPandas()
-    travel_satisfaction_dist.columns = ['Type of Travel', 'Satisfaction', 'Count']
     if loyal is True:
-        travel_satisfaction_dist.to_csv(f'{local_path}travel_type_satisfaction_distribution_loyal.csv', index=False)
-        print(f'{local_path}travel_type_satisfaction_distribution_loyal.csv LOADED')
+        save_dataframe(travel_type_dist, f'{local_path}travel_type_distribution_loyal')
     else:
-        travel_satisfaction_dist.to_csv(f'{local_path}travel_type_satisfaction_distribution_disloyal.csv', index=False)
-        print(f'{local_path}travel_type_satisfaction_distribution_disloyal.csv LOADED')
+        save_dataframe(travel_type_dist, f'{local_path}travel_type_distribution_disloyal')
 
-def business_satisfaction_per_class(df, loyal):
+def travel_type_satisfaction(df, loyal, local_path):
+    """
+    Process data to get the Travel Type satisfaction distribution into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        loyal (bool): To study loyal or non-loyal clients.
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
+    # Grouper par la colonne 'Type of Travel'
+    travel_satisfaction_dist = (
+        df.groupBy("Type of Travel", "satisfaction")
+        .agg(count("*").alias("Count"))
+    )
+    # Renommer la colonne 'satisfaction'
+    travel_satisfaction_dist = (
+        travel_satisfaction_dist.withColumnRenamed("satisfaction", "Satisfaction")
+    )
+
+    if loyal is True:
+        save_dataframe(travel_satisfaction_dist, f'{local_path}travel_type_satisfaction_distribution_loyal')
+    else:
+        save_dataframe(travel_satisfaction_dist, f'{local_path}travel_type_satisfaction_distribution_disloyal')
+
+def business_satisfaction_per_class(df, loyal, local_path):
+    """
+    Process data to get the satisfaction per class for business travel into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        loyal (bool): To study loyal or non-loyal clients.
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
+    # Filtrer les données pour "Business travel"
     filtered_df = df.filter(df["Type of Travel"] == "Business travel")
-    class_satisfaction_distribution = filtered_df.groupBy("Class", "satisfaction").count().toPandas()
+
+    # Regrouper par "Class" et "satisfaction", et compter les occurrences
+    class_satisfaction_distribution = (
+        filtered_df.groupBy("Class", "satisfaction")
+        .agg(count("*").alias("Count"))
+    )
+
     if loyal is True:
-        class_satisfaction_distribution.to_csv(f'{local_path}business_class_satisfaction_distribution_loyal.csv', index=False)
-        print(f'{local_path}business_class_satisfaction_distribution_loyal.csv LOADED')
+        save_dataframe(class_satisfaction_distribution, f'{local_path}business_class_satisfaction_distribution_loyal')
     else:
-        class_satisfaction_distribution.to_csv(f'{local_path}business_class_satisfaction_distribution_disloyal.csv', index=False)
-        print(f'{local_path}business_class_satisfaction_distribution_disloyal.csv LOADED')
+        save_dataframe(class_satisfaction_distribution, f'{local_path}business_class_satisfaction_distribution_disloyal')
 
-def personal_satisfaction_per_class(df):
+def personal_satisfaction_per_class(df, local_path):
+    """
+    Process data to get the satisfaction per class for personal travel into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
     filtered_df = df.filter(df["Type of Travel"] == "Personal Travel")
-    class_satisfaction_distribution = filtered_df.groupBy("Class", "satisfaction").count().toPandas()
-    class_satisfaction_distribution.to_csv(f'{local_path}personal_class_satisfaction_distribution.csv', index=False)
-    print(f'{local_path}personal_class_satisfaction_distribution.csv LOADED')
+    # Regrouper par "Class" et "satisfaction", et compter les occurrences
+    class_satisfaction_distribution = (
+        filtered_df.groupBy("Class", "satisfaction")
+        .agg(count("*").alias("Count"))
+    )
+    save_dataframe(class_satisfaction_distribution, f'{local_path}personal_class_satisfaction_distribution')
 
-def given_notes_per_services(df, loyal, classe):
+def given_notes_per_services(df, loyal, classe, local_path, spark):
+    """
+    Process data to get the notes' mean for each service into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        loyal (bool): To study loyal or non-loyal clients.
+        classe (str): Classe to study (eco | business).
+        local_path (str): The path to save the CSV file.
+        spark (SparkSession): The Spark session.
+
+    Returns:
+        None
+    """
     # Séparer les clients satisfaits et insatisfaits
     df_satisfied = df.filter(df["satisfaction"] == "satisfied")
     df_dissatisfied = df.filter(df["satisfaction"] == "dissatisfied")
 
     # Paramètres à analyser
-    parameters = ["Seat comfort", "Departure/Arrival time convenient", "Food and drink",
-                  "Gate location", "Inflight wifi service", "Inflight entertainment",
-                  "Online support", "Ease of Online booking", "On-board service",
-                  "Leg room service", "Baggage handling", "Checkin service",
-                  "Cleanliness", "Online boarding"]
+    parameters = [
+        "Seat comfort", "Departure/Arrival time convenient", "Food and drink",
+        "Gate location", "Inflight wifi service", "Inflight entertainment",
+        "Online support", "Ease of Online booking", "On-board service",
+        "Leg room service", "Baggage handling", "Checkin service",
+        "Cleanliness", "Online boarding"
+    ]
 
     # Calculer la moyenne des notes pour chaque paramètre pour les clients satisfaits
-    satisfied_means = df_satisfied.select(parameters).groupBy().mean().toPandas().transpose()
-    satisfied_means.columns = ['Satisfied']
-    satisfied_means['Parameter'] = satisfied_means.index
-    satisfied_means['Parameter'] = satisfied_means['Parameter'].str.replace("avg(", "").str.replace(")", "")
-
+    satisfied_means = df_satisfied.select(parameters).agg(*[mean(col(p)).alias(p) for p in parameters])
     # Calculer la moyenne des notes pour chaque paramètre pour les clients insatisfaits
-    dissatisfied_means = df_dissatisfied.select(parameters).groupBy().mean().toPandas().transpose()
-    dissatisfied_means.columns = ['Dissatisfied']
-    dissatisfied_means['Parameter'] = dissatisfied_means.index
-    dissatisfied_means['Parameter'] = dissatisfied_means['Parameter'].str.replace("avg(", "").str.replace(")", "")
+    dissatisfied_means = df_dissatisfied.select(parameters).agg(*[mean(col(p)).alias(p) for p in parameters])
+    # Convertir les DataFrames en RDDs et les joindre
+    satisfied_means_rdd = satisfied_means.rdd.flatMap(
+        lambda row: [(parameter, row[parameter]) for parameter in parameters])
+    dissatisfied_means_rdd = dissatisfied_means.rdd.flatMap(
+        lambda row: [(parameter, row[parameter]) for parameter in parameters])
 
-    # Combiner les moyennes dans un seul DataFrame
-    means_df = pd.merge(satisfied_means, dissatisfied_means, on='Parameter')
-    df_melted = means_df.melt(
-        id_vars='Parameter',
-        value_vars=['Satisfied', 'Dissatisfied'],
-        var_name='Satisfaction',
-        value_name='Average Score'
-    )
+    satisfied_means_df = spark.createDataFrame(satisfied_means_rdd.map(lambda x: Row(Parameter=x[0], Satisfied=x[1])))
+    dissatisfied_means_df = spark.createDataFrame(
+        dissatisfied_means_rdd.map(lambda x: Row(Parameter=x[0], Dissatisfied=x[1])))
+    # Joindre les DataFrames sur le paramètre
+    means_df = satisfied_means_df.join(dissatisfied_means_df, on="Parameter", how="outer")
+    # Réorganiser les données avec melt (ou l'équivalent en PySpark)
+    from pyspark.sql.functions import expr
+    # Ajouter une colonne 'Satisfaction' avec des valeurs pour le melting
+    means_df = means_df.withColumn(
+        "Satisfaction",
+        expr("CASE WHEN Satisfied IS NOT NULL THEN 'Satisfied' ELSE 'Dissatisfied' END"))
+    # Convertir les colonnes de satisfaction en une seule colonne
+    means_df = means_df.selectExpr("Parameter", "Satisfaction", "coalesce(Satisfied, Dissatisfied) as Average_Score")
+
     if loyal is True:
-        df_melted.to_csv(f'{local_path}services_satisfaction_loyal.csv', index=False)
-        print(f'{local_path}services_satisfaction_loyal.csv LOADED')
+        save_dataframe(means_df, f'{local_path}services_satisfaction_loyal')
     else:
         if classe == "eco":
-            df_melted.to_csv(f'{local_path}services_satisfaction_disloyal_eco.csv', index=False)
-            print(f'{local_path}services_satisfaction_disloyal_eco.csv LOADED')
+            save_dataframe(means_df, f'{local_path}services_satisfaction_disloyal_eco')
         else:
-            df_melted.to_csv(f'{local_path}services_satisfaction_disloyal_business.csv', index=False)
-            print(f'{local_path}services_satisfaction_disloyal_business.csv LOADED')
+            save_dataframe(means_df, f'{local_path}services_satisfaction_disloyal_business')
 
-def flight_distrib(df, loyal, classe):
-    distance_dist = df.select("Flight Distance").toPandas()
+def flight_distrib(df, loyal, classe, local_path):
+    """
+    Process data to get the flight distance distribution into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        loyal (bool): To study loyal or non-loyal clients.
+        classe (str): Classe to study (eco | business).
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
+    distance_dist = df.select("Flight Distance")
     if loyal is True:
-        distance_dist.to_csv(f'{local_path}flight_distribution_loyal.csv', index=False)
-        print(f'{local_path}flight_distribution_loyal.csv LOADED')
+        save_dataframe(distance_dist, f'{local_path}flight_distribution_loyal')
     else:
         if classe == "eco":
-            distance_dist.to_csv(f'{local_path}flight_distribution_disloyal_eco.csv', index=False)
-            print(f'{local_path}flight_distribution_disloyal_eco.csv LOADED')
+            save_dataframe(distance_dist, f'{local_path}flight_distribution_disloyal_eco')
         else:
-            distance_dist.to_csv(f'{local_path}flight_distribution_disloyal_business.csv', index=False)
-        print(f'{local_path}flight_distribution_disloyal_business.csv LOADED')
+            save_dataframe(distance_dist, f'{local_path}flight_distribution_disloyal_business')
 
-def satisfaction_per_distance(df, loyal):
+def satisfaction_per_distance(df, loyal, local_path):
+    """
+    Process data to get the satisfaction per flight distance into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        loyal (bool): To study loyal or non-loyal clients.
+        classe (str): Classe to study (eco | business).
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
     # On garde la distance de vol et la satisfaction
-    df_pd = df.select("Flight Distance", "satisfaction").toPandas()
+    df = df.select("Flight Distance", "satisfaction")
 
     # Supprimer les lignes avec des valeurs manquantes
-    df_pd.dropna(subset=["Flight Distance", "satisfaction"], inplace=True)
+    df = df.dropna(subset=["Flight Distance", "satisfaction"])
 
     # Créer des bins pour l'histogramme
     if loyal is True:
-        bins = [0, 300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3500, 4000, 5000, 6000, 7000, 8000]
-        labels = ['0-300', '300-600', '600-900', '900-1200', '1200-1500', '1500-1800',
-                  '1800-2100', '2100-2400', '2400-2700', '2700-3000', '3000-3500',
-                  '3500-4000', '4000-5000', '5000-6000', '6000-7000', '7000-8000']
+        # Utiliser expr pour créer des bins en utilisant des conditions
+        df = df.withColumn(
+            "Distance Bin",
+            when((col("Flight Distance") >= 0) & (col("Flight Distance") <= 300), '0-300')
+            .when((col("Flight Distance") > 300) & (col("Flight Distance") <= 600), '300-600')
+            .when((col("Flight Distance") > 600) & (col("Flight Distance") <= 900), '600-900')
+            .when((col("Flight Distance") > 900) & (col("Flight Distance") <= 1200), '900-1200')
+            .when((col("Flight Distance") > 1200) & (col("Flight Distance") <= 1500), '1200-1500')
+            .when((col("Flight Distance") > 1500) & (col("Flight Distance") <= 1800), '1500-1800')
+            .when((col("Flight Distance") > 1800) & (col("Flight Distance") <= 2100), '1800-2100')
+            .when((col("Flight Distance") > 2100) & (col("Flight Distance") <= 2400), '2100-2400')
+            .when((col("Flight Distance") > 2400) & (col("Flight Distance") <= 2700), '2400-2700')
+            .when((col("Flight Distance") > 2700) & (col("Flight Distance") <= 3000), '2700-3000')
+            .when((col("Flight Distance") > 3000) & (col("Flight Distance") <= 3500), '3000-3500')
+            .when((col("Flight Distance") > 3500) & (col("Flight Distance") <= 4000), '3500-4000')
+            .when((col("Flight Distance") > 4000) & (col("Flight Distance") <= 5000), '4000-5000')
+            .when((col("Flight Distance") > 5000) & (col("Flight Distance") <= 6000), '5000-6000')
+            .when((col("Flight Distance") > 6000) & (col("Flight Distance") <= 7000), '6000-7000')
+            .when((col("Flight Distance") > 7000) & (col("Flight Distance") <= 8000), '7000-8000')
+        )
     else:
-        bins = [1100, 1400, 1700, 2000, 2300, 2600, 3000]
-        labels = ['1100-1400', '1400-1700', '1700-2000', '2000-2300', '2300-2600', '2600-3000']
-
-    # Ajouter une colonne pour les bins de distance de vol
-    df_pd['Distance Bin'] = pd.cut(df_pd['Flight Distance'], bins=bins, labels=labels)
+        # Utiliser expr pour créer des bins en utilisant des conditions
+        df = df.withColumn(
+            "Distance Bin",
+            when((col("Flight Distance") >= 1100) & (col("Flight Distance") <= 1400), '1100-1400')
+            .when((col("Flight Distance") > 1400) & (col("Flight Distance") <= 1700), '1400-1700')
+            .when((col("Flight Distance") > 1700) & (col("Flight Distance") <= 2000), '1700-2000')
+            .when((col("Flight Distance") > 2000) & (col("Flight Distance") <= 2300), '2000-2300')
+            .when((col("Flight Distance") > 2300) & (col("Flight Distance") <= 2600), '2300-2600')
+            .when((col("Flight Distance") > 2600) & (col("Flight Distance") <= 3000), '2600-3000')
+        )
 
     # Calculer le nombre de clients satisfaits et total dans chaque bin
-    satisfaction_counts = df_pd.groupby(['Distance Bin', 'satisfaction']).size().unstack(fill_value=0)
-    total_counts = satisfaction_counts.sum(axis=1)
-
+    satisfaction_counts = (
+        df.groupBy("Distance Bin", "satisfaction")
+        .count()
+        .withColumnRenamed("count", "Count")
+    )
+    # Calculer les totaux pour chaque bin
+    total_counts = (
+        satisfaction_counts.groupBy("Distance Bin")
+        .agg(sum("Count").alias("Total"))
+    )
+    # Joindre les totaux avec les comptages de satisfaction
+    joined_df = satisfaction_counts.join(total_counts, on="Distance Bin")
     # Calculer le pourcentage de clients satisfaits dans chaque bin
-    satisfaction_percentage = (satisfaction_counts['satisfied'] / total_counts) * 100
+    satisfaction_percentage = (
+        joined_df.withColumn("Percentage",
+                             (col("Count") / col("Total")) * 100)
+        .select("Distance Bin", "satisfaction", "Percentage")
+    )
 
-    # Convertir en DataFrame Pandas pour la visualisation
-    satisfaction_percentage = satisfaction_percentage.reset_index()
-    satisfaction_percentage.rename(columns={0: 'Percentage'}, inplace=True)
     if loyal is True:
-        satisfaction_percentage.to_csv(f'{local_path}satisfaction_per_distance_loyal.csv', index=False)
-        print(f'{local_path}satisfaction_per_distance_loyal.csv LOADED')
+        save_dataframe(satisfaction_percentage, f'{local_path}satisfaction_per_distance_loyal')
     else:
-        satisfaction_percentage.to_csv(f'{local_path}satisfaction_per_distance_disloyal.csv', index=False)
-        print(f'{local_path}satisfaction_per_distance_disloyal.csv LOADED')
+        save_dataframe(satisfaction_percentage, f'{local_path}satisfaction_per_distance_disloyal')
 
-def satisfaction_per_distance_per_param(df, loyal):
+def satisfaction_per_distance_per_service(df, loyal, local_path):
+    """
+    Process data to get the notes' mean per flight distance bin for each service into a CSV file
+
+    Args:
+        df (DataFrame): The Spark dataframe.
+        loyal (bool): To study loyal or non-loyal clients.
+        classe (str): Classe to study (eco | business).
+        local_path (str): The path to save the CSV file.
+
+    Returns:
+        None
+    """
     # Convertir en DataFrame Pandas pour faciliter la manipulation
-    df_pd = df.select(
+    df = df.select(
         "Flight Distance", "satisfaction", "Seat comfort", "Departure/Arrival time convenient",
         "Food and drink", "Gate location", "Inflight wifi service", "Inflight entertainment",
         "Online support", "Ease of Online booking", "On-board service", "Leg room service",
-        "Baggage handling", "Checkin service", "Cleanliness", "Online boarding").toPandas()
+        "Baggage handling", "Checkin service", "Cleanliness", "Online boarding")
 
     # Supprimer les lignes avec des valeurs manquantes
-    df_pd.dropna(subset=["Flight Distance", "satisfaction"], inplace=True)
+    df.dropna(subset=["Flight Distance", "satisfaction"])
 
     # Créer des bins pour l'histogramme
     if loyal is True:
-        bins = [
-            0, 300, 600, 900, 1200, 1500, 1800, 2100, 2400,
-            2700, 3000, 3500, 4000, 5000, 6000, 7000, 8000
-        ]
-        labels = [
-            '0-300', '300-600', '600-900', '900-1200', '1200-1500', '1500-1800',
-            '1800-2100', '2100-2400', '2400-2700', '2700-3000', '3000-3500',
-            '3500-4000', '4000-5000', '5000-6000', '6000-7000', '7000-8000'
-        ]
+        # Utiliser expr pour créer des bins en utilisant des conditions
+        df = df.withColumn(
+            "Distance Bin",
+            when((col("Flight Distance") >= 0) & (col("Flight Distance") <= 300), '0-300')
+            .when((col("Flight Distance") > 300) & (col("Flight Distance") <= 600), '300-600')
+            .when((col("Flight Distance") > 600) & (col("Flight Distance") <= 900), '600-900')
+            .when((col("Flight Distance") > 900) & (col("Flight Distance") <= 1200), '900-1200')
+            .when((col("Flight Distance") > 1200) & (col("Flight Distance") <= 1500), '1200-1500')
+            .when((col("Flight Distance") > 1500) & (col("Flight Distance") <= 1800), '1500-1800')
+            .when((col("Flight Distance") > 1800) & (col("Flight Distance") <= 2100), '1800-2100')
+            .when((col("Flight Distance") > 2100) & (col("Flight Distance") <= 2400), '2100-2400')
+            .when((col("Flight Distance") > 2400) & (col("Flight Distance") <= 2700), '2400-2700')
+            .when((col("Flight Distance") > 2700) & (col("Flight Distance") <= 3000), '2700-3000')
+            .when((col("Flight Distance") > 3000) & (col("Flight Distance") <= 3500), '3000-3500')
+            .when((col("Flight Distance") > 3500) & (col("Flight Distance") <= 4000), '3500-4000')
+            .when((col("Flight Distance") > 4000) & (col("Flight Distance") <= 5000), '4000-5000')
+            .when((col("Flight Distance") > 5000) & (col("Flight Distance") <= 6000), '5000-6000')
+            .when((col("Flight Distance") > 6000) & (col("Flight Distance") <= 7000), '6000-7000')
+            .when((col("Flight Distance") > 7000) & (col("Flight Distance") <= 8000), '7000-8000')
+        )
     else:
-        bins = [1100, 1400, 1700, 2000, 2300, 2600, 3000]
-        labels = ['1100-1400', '1400-1700', '1700-2000', '2000-2300', '2300-2600', '2600-3000']
-
-    df_pd['Distance Bin'] = pd.cut(
-        df_pd['Flight Distance'],
-        bins=bins,
-        labels=labels,
-        right=False
-    )
+        # Utiliser expr pour créer des bins en utilisant des conditions
+        df = df.withColumn(
+            "Distance Bin",
+            when((col("Flight Distance") >= 1100) & (col("Flight Distance") <= 1400), '1100-1400')
+            .when((col("Flight Distance") > 1400) & (col("Flight Distance") <= 1700), '1400-1700')
+            .when((col("Flight Distance") > 1700) & (col("Flight Distance") <= 2000), '1700-2000')
+            .when((col("Flight Distance") > 2000) & (col("Flight Distance") <= 2300), '2000-2300')
+            .when((col("Flight Distance") > 2300) & (col("Flight Distance") <= 2600), '2300-2600')
+            .when((col("Flight Distance") > 2600) & (col("Flight Distance") <= 3000), '2600-3000')
+        )
 
     # Séparer les clients satisfaits et insatisfaits
-    df_satisfied_pd = df_pd[df_pd['satisfaction'] == 'satisfied']
-    df_dissatisfied_pd = df_pd[df_pd['satisfaction'] == 'dissatisfied']
+    df_satisfied = df.filter(df["satisfaction"] == "satisfied")
+    df_dissatisfied = df.filter(df["satisfaction"] == "dissatisfied")
 
     # Calculer les notes moyennes pour chaque paramètre et chaque bin
     params = [
@@ -264,100 +474,101 @@ def satisfaction_per_distance_per_param(df, loyal):
         "Online boarding"
     ]
 
-    avg_satisfied = df_satisfied_pd.groupby('Distance Bin')[params].mean().reset_index()
-    avg_dissatisfied = df_dissatisfied_pd.groupby('Distance Bin')[params].mean().reset_index()
-    # Fusionner les deux DataFrames pour comparaison
-    avg_scores = pd.merge(
-        avg_satisfied,
-        avg_dissatisfied,
-        on='Distance Bin',
-        suffixes=('_satisfied', '_dissatisfied')
-    )
-    if loyal is True:
-        avg_scores.to_csv(f'{local_path}services_satisfaction_per_distance_loyal.csv', index=False)
-        print(f'{local_path}services_satisfaction_per_distance_loyal.csv LOADED')
-    else:
-        avg_scores.to_csv(f'{local_path}services_satisfaction_per_distance_disloyal.csv', index=False)
-        print(f'{local_path}services_satisfaction_per_distance_disloyal.csv LOADED')
+    # Moyennes pour les clients
+    avg_satisfied = df_satisfied.groupBy("Distance Bin").agg(*[mean(col(param)).alias(f"{param}_satisfied") for param in params])
+    avg_dissatisfied = df_dissatisfied.groupBy("Distance Bin").agg(*[mean(col(param)).alias(f"{param}_dissatisfied") for param in params])
 
-# MAIN FUNCTION
+    # Fusionner les deux DataFrames pour comparaison
+    avg_scores = avg_satisfied.join(avg_dissatisfied, on="Distance Bin", how="outer")
+    if loyal is True:
+        save_dataframe(avg_scores, f'{local_path}services_satisfaction_per_distance_loyal')
+    else:
+        save_dataframe(avg_scores, f'{local_path}services_satisfaction_per_distance_disloyal')
+
+# ANALYSES MAIN FUNCTION
 def get_spark_analyses():
-    if not path.exists('csv'):
-        makedirs('csv')
+    # Build a Spark session
     spark = SparkSession.builder \
         .appName("Airline Satisfaction Analysis") \
         .getOrCreate()
-    # Charger les données du HDFS
-    df = load_data(spark)
 
-    # Distribution de la satisfaction
+    # Load data from HDFS
+    hdfs_address = "hdfs://localhost:9000/"
+    df = load_data(spark, hdfs_address)
+    print("ZER GOOD")
+
+    # Global analyses
+    create_folder('csv')
+    local_path = "csv/"
     if not path.exists('csv/satisfaction_distribution.csv'):
-        global_satisfaction(df)
-    # Distribution des types de clients
+        satisfaction_distrib(df, False, local_path)
     if not path.exists('csv/client_type_distribution.csv'):
-        global_client_type_distrib(df)
-    # Distribution de l'âge
+        client_type_distrib(df, False, local_path)
     if not path.exists('csv/age_distribution.csv'):
-        age_distrib(df)
-    # Moyennes globales des notes
-    df_pd = df.toPandas()
-    rating_columns = [
-        'Seat comfort', 'Departure/Arrival time convenient', 'Food and drink',
-        'Gate location', 'Online support', 'Ease of Online booking', 'On-board service',
-        'Leg room service', 'Baggage handling', 'Checkin service', 'Cleanliness',
-        'Online boarding'
-    ]
-    if not path.exists('csv/global_means_notes.csv'):
-        global_mean_notes(df_pd, rating_columns)
-    if not path.exists('csv/ecart_type.csv'):
-        global_ecart_type(df_pd, rating_columns)
-    if not path.exists('csv/variance.csv'):
-        global_variance(df_pd, rating_columns)
+        age_distrib(df, False, local_path)
+    # rating_columns = [
+    #     'Seat comfort', 'Departure/Arrival time convenient', 'Food and drink',
+    #     'Gate location', 'Online support', 'Ease of Online booking', 'On-board service',
+    #     'Leg room service', 'Baggage handling', 'Checkin service', 'Cleanliness',
+    #     'Online boarding'
+    # ]
+    # if not path.exists('csv/global_means_notes.csv'):
+    #     global_mean_notes(df, rating_columns, local_path)
+    # if not path.exists('csv/ecart_type.csv'):
+    #     global_ecart_type(df, rating_columns, local_path)
+    # if not path.exists('csv/variance.csv'):
+    #     global_variance(df, rating_columns, local_path)
 
-    # Distribution de la majorité entre 20 ans et 60 ans
+    # Age distribution between 20 and 60
     df_age_filtered = df.filter((df.Age >= 20) & (df.Age <= 60))
     if not path.exists('csv/age_distribution_filtered.csv'):
-        age_filtered_distrib(df_age_filtered)
-    # Répartition de la satisfaction (filtrée)
+        age_distrib(df_age_filtered, True, local_path)
     if not path.exists('csv/filtered_satisfaction_distribution.csv'):
-        filtered_satisfaction(df_age_filtered)
-    # Répartition des types de clients (filtrée)
+        satisfaction_distrib(df_age_filtered, True, local_path)
     if not path.exists('csv/filtered_customer_type_distribution.csv'):
-        filtered_client_type_distrib(df_age_filtered)
-    # Matrice de Corrélation
+        client_type_distrib(df_age_filtered, True, local_path)
+    numeric_cols = [
+        'Age', 'Flight Distance', 'Seat comfort', 'Departure/Arrival time convenient',
+        'Food and drink', 'Gate location', 'Inflight wifi service', 'Inflight entertainment',
+        'Online support', 'Ease of Online booking', 'On-board service', 'Leg room service',
+        'Baggage handling', 'Checkin service', 'Cleanliness', 'Online boarding',
+        'Departure Delay in Minutes', 'Arrival Delay in Minutes'
+    ]
     if not path.exists('csv/correlation_matrix.csv'):
-        correlation_matrix(df)
+        correlation_matrix(df, numeric_cols, local_path)
 
-    # CLIENTS LOYAUX
+    # Loyal clients
     if not path.exists('csv/travel_type_distribution_loyal.csv'):
-        travel_type_distrib(df_age_filtered, True)
+        travel_type_distrib(df_age_filtered, True, local_path)
     df_loyal = df_age_filtered.filter(df_age_filtered["Customer Type"] == "Loyal Customer")
     if not path.exists('csv/travel_type_satisfaction_distribution_loyal.csv'):
-        travel_type_satisfaction(df_loyal, True)
+        travel_type_satisfaction(df_loyal, True, local_path)
     if not path.exists('csv/business_class_satisfaction_distribution_loyal.csv'):
-        business_satisfaction_per_class(df_loyal, True)
+        business_satisfaction_per_class(df_loyal, True, local_path)
     if not path.exists('csv/personal_class_satisfaction_distribution.csv'):
-        personal_satisfaction_per_class(df_loyal)
+        personal_satisfaction_per_class(df_loyal, local_path)
 
+    # Loyal clients - Eco class
     df_loyal_eco = df_loyal.filter(df_loyal["Class"] == "Eco")
     if not path.exists('csv/services_satisfaction_loyal.csv'):
-        given_notes_per_services(df_loyal_eco, True, "eco")
+        given_notes_per_services(df_loyal_eco, True, "eco", local_path, spark)
     if not path.exists('csv/flight_distribution_loyal.csv'):
-        flight_distrib(df_loyal_eco, True, "eco")
+        flight_distrib(df_loyal_eco, True, "eco", local_path)
     if not path.exists('csv/satisfaction_per_distance_loyal.csv'):
-        satisfaction_per_distance(df_loyal_eco, True)
+        satisfaction_per_distance(df_loyal_eco, True, local_path)
     if not path.exists('csv/services_satisfaction_per_distance_loyal.csv'):
-        satisfaction_per_distance_per_param(df_loyal_eco, True)
+        satisfaction_per_distance_per_service(df_loyal_eco, True, local_path)
 
-    # CLIENTS NON LOYAUX
+    # Non-loyal clients
     if not path.exists('csv/travel_type_distribution_disloyal.csv'):
-        travel_type_distrib(df_age_filtered, False)
+        travel_type_distrib(df_age_filtered, False, local_path)
     df_disloyal = df_age_filtered.filter(df_age_filtered["Customer Type"] == "disloyal Customer")
     if not path.exists('csv/travel_type_satisfaction_distribution_disloyal.csv'):
-        travel_type_satisfaction(df_disloyal, False)
+        travel_type_satisfaction(df_disloyal, False, local_path)
     if not path.exists('csv/business_class_satisfaction_distribution_disloyal.csv'):
-        business_satisfaction_per_class(df_disloyal, False)
+        business_satisfaction_per_class(df_disloyal, False, local_path)
 
+    # Non-loyal clients - Business & Eco classes
     df_disloyal_eco = df_disloyal.filter(
         (df_disloyal["Type of Travel"] == "Business travel") &
         (df_disloyal["Class"] == "Eco")
@@ -367,26 +578,25 @@ def get_spark_analyses():
         (df_disloyal["Class"] == "Business")
     )
     if not path.exists('csv/services_satisfaction_disloyal_eco.csv'):
-        given_notes_per_services(df_disloyal_eco, False, "eco")
+        given_notes_per_services(df_disloyal_eco, False, "eco", local_path, spark)
     if not path.exists('csv/services_satisfaction_disloyal_business.csv'):
-        given_notes_per_services(df_disloyal_busi, False, "business")
+        given_notes_per_services(df_disloyal_busi, False, "business", local_path, spark)
     if not path.exists('csv/flight_distribution_disloyal_eco.csv'):
-        flight_distrib(df_disloyal_eco, False, "eco")
+        flight_distrib(df_disloyal_eco, False, "eco", local_path)
     if not path.exists('csv/flight_distribution_disloyal_business.csv'):
-        flight_distrib(df_disloyal_busi, False, "business")
+        flight_distrib(df_disloyal_busi, False, "business", local_path)
 
     df_disloyal_distance = df_disloyal_busi.filter(
         (df['Flight Distance'] >= 1100) &
         (df['Flight Distance'] <= 3000)
     )
     if not path.exists('csv/satisfaction_per_distance_disloyal.csv'):
-        satisfaction_per_distance(df_disloyal_distance, False)
+        satisfaction_per_distance(df_disloyal_distance, False, local_path)
     if not path.exists('csv/services_satisfaction_per_distance_disloyal.csv'):
-        satisfaction_per_distance_per_param(df_disloyal_distance, False)
+        satisfaction_per_distance_per_service(df_disloyal_distance, False, local_path)
 
-    # Arrêter la session Spark
+    # Stop the Spark session
     print("*************************")
     print("ANALYSES COMPLETED")
     print("*************************")
     spark.stop()
-    # return satisfaction_dist
