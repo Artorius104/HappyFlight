@@ -118,8 +118,6 @@ def get_loyal_figures(folder_path):
     df_flight_distance = load_csv_to_dataframe(f'{folder_path}flight_distribution_loyal.csv', spark)
     df_flight_distance_satisfaction = load_csv_to_dataframe(f'{folder_path}satisfaction_per_distance_loyal.csv', spark)
     df_services_satisfaction_distance = load_csv_to_dataframe(f'{folder_path}services_satisfaction_per_distance_disloyal.csv', spark)
-    df_services_satisfaction_distance.show()
-    print("\n")
 
     travel_type_fig = travel_type_pie_chart(df_travel_type)
     travel_type_satisfaction_fig = travel_type_satisfaction_bar_chart(df_travel_type_satisfaction)
@@ -159,8 +157,6 @@ def get_non_loyal_figures(folder_path):
     df_flight_distance_business = load_csv_to_dataframe(f'{folder_path}flight_distribution_disloyal_business.csv', spark)
     df_flight_distance_satisfaction = load_csv_to_dataframe(f'{folder_path}satisfaction_per_distance_disloyal.csv', spark)
     df_services_satisfaction_distance = load_csv_to_dataframe(f'{folder_path}services_satisfaction_per_distance_disloyal.csv', spark)
-    df_services_satisfaction_distance.show()
-    print("\n")
 
     travel_type_fig = travel_type_pie_chart(df_travel_type)
     travel_type_satisfaction_fig = travel_type_satisfaction_bar_chart(df_travel_type_satisfaction)
@@ -174,15 +170,15 @@ def get_non_loyal_figures(folder_path):
     services_comparison_layout = create_services_comparison_layout(services_comparison_fig_list)
 
     res = {
-            "travel_type": travel_type_fig,
-            "travel_type_satisfaction": travel_type_satisfaction_fig,
-            "business_class_satisfaction": business_class_satisfaction_fig,
-            "per_services_satisfaction_eco": per_services_satisfaction_eco_fig,
-            "per_services_satisfaction_business": per_services_satisfaction_business_fig,
-            "flight_distance_eco": flight_distance_eco_fig,
-            "flight_distance_business": flight_distance_business_fig,
-            "flight_distance_satisfaction": flight_distance_satisfaction_fig,
-            "services_comparison": services_comparison_layout
+        "travel_type": travel_type_fig,
+        "travel_type_satisfaction": travel_type_satisfaction_fig,
+        "business_class_satisfaction": business_class_satisfaction_fig,
+        "per_services_satisfaction_eco": per_services_satisfaction_eco_fig,
+        "per_services_satisfaction_business": per_services_satisfaction_business_fig,
+        "flight_distance_eco": flight_distance_eco_fig,
+        "flight_distance_business": flight_distance_business_fig,
+        "flight_distance_satisfaction": flight_distance_satisfaction_fig,
+        "services_comparison": services_comparison_layout
     }
     spark.stop()
 

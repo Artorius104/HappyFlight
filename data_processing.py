@@ -536,9 +536,9 @@ def get_spark_analyses():
         correlation_matrix(df, numeric_cols, local_path, spark)
 
     # Loyal clients
-    if not path.exists('csv/travel_type_distribution_loyal.csv'):
-        travel_type_distrib(df_age_filtered, True, local_path)
     df_loyal = df_age_filtered.filter(df_age_filtered["Customer Type"] == "Loyal Customer")
+    if not path.exists('csv/travel_type_distribution_loyal.csv'):
+        travel_type_distrib(df_loyal, True, local_path)
     if not path.exists('csv/travel_type_satisfaction_distribution_loyal.csv'):
         travel_type_satisfaction(df_loyal, True, local_path)
     if not path.exists('csv/business_class_satisfaction_distribution_loyal.csv'):
@@ -558,9 +558,9 @@ def get_spark_analyses():
         satisfaction_per_distance_per_service(df_loyal_eco, True, local_path)
 
     # Non-loyal clients
-    if not path.exists('csv/travel_type_distribution_disloyal.csv'):
-        travel_type_distrib(df_age_filtered, False, local_path)
     df_disloyal = df_age_filtered.filter(df_age_filtered["Customer Type"] == "disloyal Customer")
+    if not path.exists('csv/travel_type_distribution_disloyal.csv'):
+        travel_type_distrib(df_disloyal, False, local_path)
     if not path.exists('csv/travel_type_satisfaction_distribution_disloyal.csv'):
         travel_type_satisfaction(df_disloyal, False, local_path)
     if not path.exists('csv/business_class_satisfaction_distribution_disloyal.csv'):
