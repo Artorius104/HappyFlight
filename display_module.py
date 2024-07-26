@@ -1,5 +1,5 @@
 import plotly.graph_objs as go
-from pyspark.sql import functions as F
+from pyspark.sql.functions import col, expr, lit
 
 
 def satisfaction_pie_chart(df, filtered):
@@ -393,16 +393,16 @@ def services_comparison_graphs(df):
 
         # Sélectionner les colonnes et transformer en format long
         df_long = df.select(
-            F.col("Distance Bin"),
-            F.expr(f"'{param}_satisfied' AS Parameter"),
-            F.col(satisfied_col).alias("Average_Score"),
-            F.lit('satisfied').alias("Satisfaction")
+            col("Distance Bin"),
+            expr(f"'{param}_satisfied' AS Parameter"),
+            col(satisfied_col).alias("Average_Score"),
+            lit('satisfied').alias("Satisfaction")
         ).union(
             df.select(
-                F.col("Distance Bin"),
-                F.expr(f"'{param}_dissatisfied' AS Parameter"),
-                F.col(dissatisfied_col).alias("Average_Score"),
-                F.lit('dissatisfied').alias("Satisfaction")
+                col("Distance Bin"),
+                expr(f"'{param}_dissatisfied' AS Parameter"),
+                col(dissatisfied_col).alias("Average_Score"),
+                lit('dissatisfied').alias("Satisfaction")
             )
         )
 
