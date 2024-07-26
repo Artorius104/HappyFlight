@@ -1,11 +1,9 @@
-from os import path, listdir
-import shutil
+from os import path
 
 from pyspark.sql import SparkSession, DataFrame, Row
 from pyspark.sql.functions import col, round, sum, count, mean, when
-import pandas as pd
 
-from utils_data import create_folder, load_data, save_dataframe
+from utils_data import create_folder, load_data_from_hdfs, save_dataframe
 
 
 def satisfaction_distrib(df: DataFrame, filtered: bool, local_path: str) -> None:
@@ -494,7 +492,7 @@ def get_spark_analyses():
 
     # Load data from HDFS
     hdfs_address = "hdfs://localhost:9000/"
-    df = load_data(spark, hdfs_address)
+    df = load_data_from_hdfs(spark, hdfs_address)
     print("ZER GOOD")
 
     # Global analyses
@@ -535,7 +533,7 @@ def get_spark_analyses():
         'Departure Delay in Minutes', 'Arrival Delay in Minutes'
     ]
     if not path.exists('csv/correlation_matrix.csv'):
-        correlation_matrix(df, numeric_cols, local_path)
+        correlation_matrix(df, numeric_cols, local_path, spark)
 
     # Loyal clients
     if not path.exists('csv/travel_type_distribution_loyal.csv'):

@@ -1,0 +1,325 @@
+col1,col2,correlation
+Age,Age,1.0
+Age,Flight Distance,-0.2496250262824619
+Age,Seat comfort,0.008784235566822968
+Age,Departure/Arrival time convenient,0.03905545574502036
+Age,Food and drink,0.015748531719418483
+Age,Gate location,-5.473242174929647E-4
+Age,Inflight wifi service,0.013964542902877628
+Age,Inflight entertainment,0.13051076864520444
+Age,Online support,0.12120087423323551
+Age,Ease of Online booking,0.07159386882885514
+Age,On-board service,0.06670371719639667
+Age,Leg room service,0.0837622693347125
+Age,Baggage handling,-0.015452234206265023
+Age,Checkin service,0.031845061368217076
+Age,Cleanliness,-0.01827111267480033
+Age,Online boarding,0.03797291480301426
+Age,Departure Delay in Minutes,-0.009040585852670289
+Age,Arrival Delay in Minutes,-0.011205962237137965
+Flight Distance,Age,-0.24962502628246186
+Flight Distance,Flight Distance,1.0
+Flight Distance,Seat comfort,-0.042408759453718976
+Flight Distance,Departure/Arrival time convenient,0.0013502877430517366
+Flight Distance,Food and drink,-0.004649200130603053
+Flight Distance,Gate location,-0.0024088881570615396
+Flight Distance,Inflight wifi service,0.01223022234886082
+Flight Distance,Inflight entertainment,-0.02754231173123632
+Flight Distance,Online support,-0.03202248370454572
+Flight Distance,Ease of Online booking,-0.022299283851114682
+Flight Distance,On-board service,-0.03255903942409824
+Flight Distance,Leg room service,-0.030315769893679338
+Flight Distance,Baggage handling,0.019768397114218583
+Flight Distance,Checkin service,0.002455650444518459
+Flight Distance,Cleanliness,0.009431812539736127
+Flight Distance,Online boarding,0.009603524945973881
+Flight Distance,Departure Delay in Minutes,0.11255544011217526
+Flight Distance,Arrival Delay in Minutes,0.10973348892055752
+Seat comfort,Age,0.008784235566822974
+Seat comfort,Flight Distance,-0.04240875945371897
+Seat comfort,Seat comfort,1.0
+Seat comfort,Departure/Arrival time convenient,0.4349512012800899
+Seat comfort,Food and drink,0.7159971305521263
+Seat comfort,Gate location,0.40529961252732605
+Seat comfort,Inflight wifi service,0.12913066033842557
+Seat comfort,Inflight entertainment,0.4264471150153773
+Seat comfort,Online support,0.12027826578174684
+Seat comfort,Ease of Online booking,0.2115306829041544
+Seat comfort,On-board service,0.12114883742800979
+Seat comfort,Leg room service,0.13613569615059876
+Seat comfort,Baggage handling,0.11848862920676127
+Seat comfort,Checkin service,0.041213652155742464
+Seat comfort,Cleanliness,0.1084750736505568
+Seat comfort,Online boarding,0.1303964840900625
+Seat comfort,Departure Delay in Minutes,-0.023817101588123495
+Seat comfort,Arrival Delay in Minutes,-0.02546263795764821
+Departure/Arrival time convenient,Age,0.03905545574502037
+Departure/Arrival time convenient,Flight Distance,0.001350287743051742
+Departure/Arrival time convenient,Seat comfort,0.43495120128008996
+Departure/Arrival time convenient,Departure/Arrival time convenient,1.0
+Departure/Arrival time convenient,Food and drink,0.5273811938547652
+Departure/Arrival time convenient,Gate location,0.5442585238077263
+Departure/Arrival time convenient,Inflight wifi service,-0.001973702086760989
+Departure/Arrival time convenient,Inflight entertainment,0.07720291358769261
+Departure/Arrival time convenient,Online support,-5.462471241297044E-4
+Departure/Arrival time convenient,Ease of Online booking,0.0017554893171488639
+Departure/Arrival time convenient,On-board service,0.06044636928805186
+Departure/Arrival time convenient,Leg room service,0.029421856812467135
+Departure/Arrival time convenient,Baggage handling,0.06739615507601251
+Departure/Arrival time convenient,Checkin service,0.06279376966183692
+Departure/Arrival time convenient,Cleanliness,0.06712570301172989
+Departure/Arrival time convenient,Online boarding,-6.234597665827144E-4
+Departure/Arrival time convenient,Departure Delay in Minutes,0.004395131278239804
+Departure/Arrival time convenient,Arrival Delay in Minutes,0.0024997521071358606
+Food and drink,Age,0.0157485317194185
+Food and drink,Flight Distance,-0.004649200130603051
+Food and drink,Seat comfort,0.7159971305521263
+Food and drink,Departure/Arrival time convenient,0.5273811938547652
+Food and drink,Food and drink,1.0
+Food and drink,Gate location,0.5233278700311664
+Food and drink,Inflight wifi service,0.025916869874113194
+Food and drink,Inflight entertainment,0.367669100569211
+Food and drink,Online support,0.02855389459849748
+Food and drink,Ease of Online booking,0.04118889604708314
+Food and drink,On-board service,0.03864606089395735
+Food and drink,Leg room service,0.07416052955978664
+Food and drink,Baggage handling,0.03637000326912943
+Food and drink,Checkin service,0.011897905189420353
+Food and drink,Cleanliness,0.033415903185104026
+Food and drink,Online boarding,0.013587184252904578
+Food and drink,Departure Delay in Minutes,-0.013432558997255411
+Food and drink,Arrival Delay in Minutes,-0.014845240469076478
+Gate location,Age,-5.473242174929664E-4
+Gate location,Flight Distance,-0.0024088881570615422
+Gate location,Seat comfort,0.40529961252732605
+Gate location,Departure/Arrival time convenient,0.5442585238077263
+Gate location,Food and drink,0.5233278700311664
+Gate location,Gate location,1.0
+Gate location,Inflight wifi service,-0.0040862835619512134
+Gate location,Inflight entertainment,-2.801142180109728E-4
+Gate location,Online support,0.0029083373714373986
+Gate location,Ease of Online booking,0.0014418771362770977
+Gate location,On-board service,-0.025132352020166605
+Gate location,Leg room service,-0.0074071602436916375
+Gate location,Baggage handling,-4.0060504872234084E-4
+Gate location,Checkin service,-0.03185911056588122
+Gate location,Cleanliness,-0.001704713199702695
+Gate location,Online boarding,-0.003043241395027284
+Gate location,Departure Delay in Minutes,0.00396154202500277
+Gate location,Arrival Delay in Minutes,0.003619884876379811
+Inflight wifi service,Age,0.013964542902877611
+Inflight wifi service,Flight Distance,0.012230222348860818
+Inflight wifi service,Seat comfort,0.12913066033842557
+Inflight wifi service,Departure/Arrival time convenient,-0.0019737020867609863
+Inflight wifi service,Food and drink,0.025916869874113197
+Inflight wifi service,Gate location,-0.004086283561951215
+Inflight wifi service,Inflight wifi service,1.0
+Inflight wifi service,Inflight entertainment,0.2538225091856221
+Inflight wifi service,Online support,0.5573401124584355
+Inflight wifi service,Ease of Online booking,0.6011004811843793
+Inflight wifi service,On-board service,0.060794384815418205
+Inflight wifi service,Leg room service,0.033589135161457104
+Inflight wifi service,Baggage handling,0.038250807311901225
+Inflight wifi service,Checkin service,0.09250843126013962
+Inflight wifi service,Cleanliness,0.03826345714927797
+Inflight wifi service,Online boarding,0.6317857895189601
+Inflight wifi service,Departure Delay in Minutes,-0.03290048266035303
+Inflight wifi service,Arrival Delay in Minutes,-0.03519782828114211
+Inflight entertainment,Age,0.13051076864520442
+Inflight entertainment,Flight Distance,-0.027542311731236335
+Inflight entertainment,Seat comfort,0.4264471150153773
+Inflight entertainment,Departure/Arrival time convenient,0.0772029135876926
+Inflight entertainment,Food and drink,0.367669100569211
+Inflight entertainment,Gate location,-2.8011421801097183E-4
+Inflight entertainment,Inflight wifi service,0.2538225091856221
+Inflight entertainment,Inflight entertainment,1.0
+Inflight entertainment,Online support,0.44195729350317
+Inflight entertainment,Ease of Online booking,0.32173141489437923
+Inflight entertainment,On-board service,0.18391227666750837
+Inflight entertainment,Leg room service,0.16073054356715885
+Inflight entertainment,Baggage handling,0.11721278107063962
+Inflight entertainment,Checkin service,0.22411985113588187
+Inflight entertainment,Cleanliness,0.10945125959795397
+Inflight entertainment,Online boarding,0.3557143037863402
+Inflight entertainment,Departure Delay in Minutes,-0.030491429278929266
+Inflight entertainment,Arrival Delay in Minutes,-0.03318211126423684
+Online support,Age,0.12120087423323554
+Online support,Flight Distance,-0.03202248370454569
+Online support,Seat comfort,0.12027826578174684
+Online support,Departure/Arrival time convenient,-5.46247124129709E-4
+Online support,Food and drink,0.028553894598497463
+Online support,Gate location,0.0029083373714373895
+Online support,Inflight wifi service,0.5573401124584354
+Online support,Inflight entertainment,0.4419572935031699
+Online support,Online support,1.0
+Online support,Ease of Online booking,0.617488917915766
+Online support,On-board service,0.15792958203486757
+Online support,Leg room service,0.13843342027898842
+Online support,Baggage handling,0.10244393817842842
+Online support,Checkin service,0.20682384414338525
+Online support,Cleanliness,0.09572614259754118
+Online support,Online boarding,0.6698428536103128
+Online support,Departure Delay in Minutes,-0.03401768496099927
+Online support,Arrival Delay in Minutes,-0.03593999534299087
+Ease of Online booking,Age,0.07159386882885514
+Ease of Online booking,Flight Distance,-0.02229928385111465
+Ease of Online booking,Seat comfort,0.21153068290415447
+Ease of Online booking,Departure/Arrival time convenient,0.0017554893171488816
+Ease of Online booking,Food and drink,0.04118889604708312
+Ease of Online booking,Gate location,0.0014418771362770943
+Ease of Online booking,Inflight wifi service,0.6011004811843792
+Ease of Online booking,Inflight entertainment,0.3217314148943793
+Ease of Online booking,Online support,0.617488917915766
+Ease of Online booking,Ease of Online booking,1.0
+Ease of Online booking,On-board service,0.436263506483344
+Ease of Online booking,Leg room service,0.35512202867682413
+Ease of Online booking,Baggage handling,0.39832166902573646
+Ease of Online booking,Checkin service,0.1377435969189897
+Ease of Online booking,Cleanliness,0.41767457040568856
+Ease of Online booking,Online boarding,0.6843202034135267
+Ease of Online booking,Departure Delay in Minutes,-0.036545257186640465
+Ease of Online booking,Arrival Delay in Minutes,-0.03971712911094259
+On-board service,Age,0.06670371719639663
+On-board service,Flight Distance,-0.03255903942409825
+On-board service,Seat comfort,0.12114883742800978
+On-board service,Departure/Arrival time convenient,0.060446369288051874
+On-board service,Food and drink,0.03864606089395735
+On-board service,Gate location,-0.025132352020166605
+On-board service,Inflight wifi service,0.06079438481541821
+On-board service,Inflight entertainment,0.18391227666750837
+On-board service,Online support,0.1579295820348676
+On-board service,Ease of Online booking,0.436263506483344
+On-board service,On-board service,1.0
+On-board service,Leg room service,0.4117460074951798
+On-board service,Baggage handling,0.5304477973543267
+On-board service,Checkin service,0.25083912943027586
+On-board service,Cleanliness,0.5512944997700575
+On-board service,Online boarding,0.13950576392456662
+On-board service,Departure Delay in Minutes,-0.03764094789855613
+On-board service,Arrival Delay in Minutes,-0.041360402880938674
+Leg room service,Age,0.0837622693347125
+Leg room service,Flight Distance,-0.030315769893679328
+Leg room service,Seat comfort,0.13613569615059876
+Leg room service,Departure/Arrival time convenient,0.02942185681246713
+Leg room service,Food and drink,0.07416052955978665
+Leg room service,Gate location,-0.007407160243691637
+Leg room service,Inflight wifi service,0.03358913516145711
+Leg room service,Inflight entertainment,0.16073054356715893
+Leg room service,Online support,0.13843342027898844
+Leg room service,Ease of Online booking,0.35512202867682413
+Leg room service,On-board service,0.4117460074951798
+Leg room service,Leg room service,1.0
+Leg room service,Baggage handling,0.41164030311897465
+Leg room service,Checkin service,0.16794189089103692
+Leg room service,Cleanliness,0.41150492842226577
+Leg room service,Online boarding,0.11290042550600306
+Leg room service,Departure Delay in Minutes,0.0036595932530370384
+Leg room service,Arrival Delay in Minutes,5.369102881071673E-4
+Baggage handling,Age,-0.015452234206265049
+Baggage handling,Flight Distance,0.019768397114218596
+Baggage handling,Seat comfort,0.11848862920676134
+Baggage handling,Departure/Arrival time convenient,0.0673961550760125
+Baggage handling,Food and drink,0.03637000326912943
+Baggage handling,Gate location,-4.0060504872233883E-4
+Baggage handling,Inflight wifi service,0.03825080731190125
+Baggage handling,Inflight entertainment,0.11721278107063962
+Baggage handling,Online support,0.10244393817842846
+Baggage handling,Ease of Online booking,0.3983216690257365
+Baggage handling,On-board service,0.5304477973543267
+Baggage handling,Leg room service,0.41164030311897465
+Baggage handling,Baggage handling,1.0
+Baggage handling,Checkin service,0.24085761635767147
+Baggage handling,Cleanliness,0.6318032914349733
+Baggage handling,Online boarding,0.11192021457624837
+Baggage handling,Departure Delay in Minutes,-0.009985110355944704
+Baggage handling,Arrival Delay in Minutes,-0.014211858947579252
+Checkin service,Age,0.03184506136821707
+Checkin service,Flight Distance,0.002455650444518451
+Checkin service,Seat comfort,0.041213652155742464
+Checkin service,Departure/Arrival time convenient,0.06279376966183693
+Checkin service,Food and drink,0.011897905189420344
+Checkin service,Gate location,-0.03185911056588124
+Checkin service,Inflight wifi service,0.09250843126013958
+Checkin service,Inflight entertainment,0.22411985113588184
+Checkin service,Online support,0.20682384414338523
+Checkin service,Ease of Online booking,0.13774359691898969
+Checkin service,On-board service,0.2508391294302759
+Checkin service,Leg room service,0.1679418908910369
+Checkin service,Baggage handling,0.24085761635767147
+Checkin service,Checkin service,1.0
+Checkin service,Cleanliness,0.24173397443439207
+Checkin service,Online boarding,0.1843444163951996
+Checkin service,Departure Delay in Minutes,-0.020895741701441744
+Checkin service,Arrival Delay in Minutes,-0.023841793784607435
+Cleanliness,Age,-0.018271112674800354
+Cleanliness,Flight Distance,0.009431812539736151
+Cleanliness,Seat comfort,0.10847507365055681
+Cleanliness,Departure/Arrival time convenient,0.06712570301172989
+Cleanliness,Food and drink,0.03341590318510404
+Cleanliness,Gate location,-0.0017047131997026909
+Cleanliness,Inflight wifi service,0.038263457149277987
+Cleanliness,Inflight entertainment,0.10945125959795397
+Cleanliness,Online support,0.09572614259754116
+Cleanliness,Ease of Online booking,0.4176745704056885
+Cleanliness,On-board service,0.5512944997700575
+Cleanliness,Leg room service,0.41150492842226566
+Cleanliness,Baggage handling,0.6318032914349733
+Cleanliness,Checkin service,0.24173397443439223
+Cleanliness,Cleanliness,1.0
+Cleanliness,Online boarding,0.10623767812562392
+Cleanliness,Departure Delay in Minutes,-0.062134346060260096
+Cleanliness,Arrival Delay in Minutes,-0.06704198174952392
+Online boarding,Age,0.037972914803014256
+Online boarding,Flight Distance,0.009603524945973925
+Online boarding,Seat comfort,0.1303964840900625
+Online boarding,Departure/Arrival time convenient,-6.234597665827176E-4
+Online boarding,Food and drink,0.013587184252904554
+Online boarding,Gate location,-0.00304324139502728
+Online boarding,Inflight wifi service,0.6317857895189604
+Online boarding,Inflight entertainment,0.3557143037863402
+Online boarding,Online support,0.6698428536103128
+Online boarding,Ease of Online booking,0.6843202034135267
+Online boarding,On-board service,0.13950576392456662
+Online boarding,Leg room service,0.11290042550600306
+Online boarding,Baggage handling,0.11192021457624837
+Online boarding,Checkin service,0.1843444163951996
+Online boarding,Cleanliness,0.1062376781256239
+Online boarding,Online boarding,1.0
+Online boarding,Departure Delay in Minutes,-0.020045042620194464
+Online boarding,Arrival Delay in Minutes,-0.021757261578525908
+Departure Delay in Minutes,Age,-0.009040585852670289
+Departure Delay in Minutes,Flight Distance,0.11255544011217526
+Departure Delay in Minutes,Seat comfort,-0.023817101588123484
+Departure Delay in Minutes,Departure/Arrival time convenient,0.004395131278239802
+Departure Delay in Minutes,Food and drink,-0.013432558997255416
+Departure Delay in Minutes,Gate location,0.0039615420250027795
+Departure Delay in Minutes,Inflight wifi service,-0.032900482660353045
+Departure Delay in Minutes,Inflight entertainment,-0.030491429278929255
+Departure Delay in Minutes,Online support,-0.03401768496099928
+Departure Delay in Minutes,Ease of Online booking,-0.03654525718664046
+Departure Delay in Minutes,On-board service,-0.03764094789855615
+Departure Delay in Minutes,Leg room service,0.003659593253037032
+Departure Delay in Minutes,Baggage handling,-0.00998511035594471
+Departure Delay in Minutes,Checkin service,-0.020895741701441744
+Departure Delay in Minutes,Cleanliness,-0.062134346060260116
+Departure Delay in Minutes,Online boarding,-0.02004504262019447
+Departure Delay in Minutes,Departure Delay in Minutes,1.0
+Departure Delay in Minutes,Arrival Delay in Minutes,0.9593823533648642
+Arrival Delay in Minutes,Age,-0.011205962237137962
+Arrival Delay in Minutes,Flight Distance,0.10973348892055755
+Arrival Delay in Minutes,Seat comfort,-0.025462637957648214
+Arrival Delay in Minutes,Departure/Arrival time convenient,0.0024997521071358528
+Arrival Delay in Minutes,Food and drink,-0.014845240469076478
+Arrival Delay in Minutes,Gate location,0.0036198848763798097
+Arrival Delay in Minutes,Inflight wifi service,-0.03519782828114211
+Arrival Delay in Minutes,Inflight entertainment,-0.03318211126423685
+Arrival Delay in Minutes,Online support,-0.03593999534299084
+Arrival Delay in Minutes,Ease of Online booking,-0.039717129110942585
+Arrival Delay in Minutes,On-board service,-0.041360402880938674
+Arrival Delay in Minutes,Leg room service,5.369102881071684E-4
+Arrival Delay in Minutes,Baggage handling,-0.01421185894757925
+Arrival Delay in Minutes,Checkin service,-0.023841793784607445
+Arrival Delay in Minutes,Cleanliness,-0.0670419817495239
+Arrival Delay in Minutes,Online boarding,-0.021757261578525908
+Arrival Delay in Minutes,Departure Delay in Minutes,0.9593823533648643
+Arrival Delay in Minutes,Arrival Delay in Minutes,1.0
