@@ -391,6 +391,7 @@ def satisfaction_per_distance(df, loyal, local_path):
     )
     # Joindre les totaux avec les comptages de satisfaction
     joined_df = satisfaction_counts.join(total_counts, on="Distance Bin")
+    joined_df.show()
     # Calculer le pourcentage de clients satisfaits dans chaque bin
     satisfaction_percentage = (
         joined_df.withColumn("Percentage",

@@ -3,12 +3,10 @@ from pyspark.sql import functions as F
 
 
 def satisfaction_pie_chart(df, filtered):
-    # Collect data from PySpark DataFrame
     data = df.collect()
     labels = [row['satisfaction'] for row in data]
     values = [row['percentage'] for row in data]
 
-    # Create the pie chart
     fig = go.Figure(
         data=[go.Pie(
             labels=labels,
@@ -30,7 +28,6 @@ def satisfaction_pie_chart(df, filtered):
     return fig
 
 def customer_type_pie_chart(df, filtered):
-    # Collect data from PySpark DataFrame
     data = df.collect()
     labels = [row['Customer Type'] for row in data]
     values = [row['percentage'] for row in data]
@@ -85,20 +82,15 @@ def age_distribution_chart(df, filtered):
     return fig
 
 def plot_correlation_heatmap(df):
-    # Convert PySpark DataFrame to a list of rows
     data = df.collect()
 
-    # Extract unique column names
     cols = sorted(set(row['col1'] for row in data).union(set(row['col2'] for row in data)))
 
-    # Create a dictionary to hold correlation values
     correlation_dict = {(row['col1'], row['col2']): row['correlation'] for row in data}
     correlation_dict.update({(row['col2'], row['col1']): row['correlation'] for row in data})
 
-    # Create a 2D list for correlation matrix values
     correlation_matrix = [[correlation_dict.get((col1, col2), 0) for col2 in cols] for col1 in cols]
 
-    # Créer la carte thermique
     fig = go.Figure(data=go.Heatmap(
         z=correlation_matrix,
         x=cols,
@@ -141,14 +133,11 @@ def travel_type_pie_chart(df):
     return fig
 
 def travel_type_satisfaction_bar_chart(df):
-    # Collect data from PySpark DataFrame
     data = df.collect()
 
-    # Extract unique values for Type of Travel and Satisfaction
     types_of_travel = sorted(set(row['Type of Travel'] for row in data))
     satisfaction_levels = sorted(set(row['Satisfaction'] for row in data))
 
-    # Prepare data for the bar chart
     chart_data = {satisfaction: {travel: 0 for travel in types_of_travel} for satisfaction in satisfaction_levels}
     for row in data:
         chart_data[row['Satisfaction']][row['Type of Travel']] = row['Count']
@@ -164,7 +153,6 @@ def travel_type_satisfaction_bar_chart(df):
             )
         )
 
-        # Create the figure
     fig = go.Figure(data=traces)
     fig.update_layout(
         barmode='group',
@@ -176,19 +164,15 @@ def travel_type_satisfaction_bar_chart(df):
     return fig
 
 def business_class_satisfaction_bar_chart(df):
-    # Collect data from PySpark DataFrame
     data = df.collect()
 
-    # Extract unique values for Class and Satisfaction
     classes = sorted(set(row['Class'] for row in data))
     satisfaction_levels = sorted(set(row['satisfaction'] for row in data))
 
-    # Prepare data for the bar chart
     chart_data = {satisfaction: {cls: 0 for cls in classes} for satisfaction in satisfaction_levels}
     for row in data:
         chart_data[row['satisfaction']][row['Class']] = row['Count']
 
-    # Create traces for the bar chart
     traces = []
     for satisfaction in satisfaction_levels:
         traces.append(
@@ -200,7 +184,6 @@ def business_class_satisfaction_bar_chart(df):
             )
         )
 
-    # Create the figure
     fig = go.Figure(data=traces)
     fig.update_layout(
         barmode='stack',
@@ -213,19 +196,15 @@ def business_class_satisfaction_bar_chart(df):
 
 
 def personal_class_satisfaction_bar_chart(df):
-    # Collect data from PySpark DataFrame
     data = df.collect()
 
-    # Extract unique values for Class and Satisfaction
     classes = sorted(set(row['Class'] for row in data))
     satisfaction_levels = sorted(set(row['satisfaction'] for row in data))
 
-    # Prepare data for the bar chart
     chart_data = {satisfaction: {cls: 0 for cls in classes} for satisfaction in satisfaction_levels}
     for row in data:
         chart_data[row['satisfaction']][row['Class']] = row['Count']
 
-    # Create traces for the bar chart
     traces = []
     for satisfaction in satisfaction_levels:
         traces.append(
@@ -237,7 +216,6 @@ def personal_class_satisfaction_bar_chart(df):
             )
         )
 
-    # Create the figure
     fig = go.Figure(data=traces)
     fig.update_layout(
         barmode='stack',
@@ -250,20 +228,15 @@ def personal_class_satisfaction_bar_chart(df):
 
 
 def per_services_satisfaction_bar_chart(df, classe):
-    # Collect data from PySpark DataFrame
     data = df.collect()
 
-    # Extract unique satisfaction levels
     satisfaction_levels = sorted(set(row['Satisfaction'] for row in data))
 
-    # Prepare traces for the bar chart
     traces = []
     for satisfaction in satisfaction_levels:
-        # Filter data for the current satisfaction level
         subset_data = [(row['Parameter'], row['Average_Score']) for row in data if row['Satisfaction'] == satisfaction]
         parameters, scores = zip(*subset_data)
 
-        # Add bar trace to the figure
         traces.append(
             go.Bar(
                 x=parameters,
@@ -273,10 +246,8 @@ def per_services_satisfaction_bar_chart(df, classe):
             )
         )
 
-    # Create the figure
     fig = go.Figure(data=traces)
 
-    # Update layout based on the class parameter
     if classe == "eco":
         fig.update_layout(
             title="Moyenne des notes par paramètre pour les clients non-loyaux en Eco",
@@ -306,13 +277,10 @@ def per_services_satisfaction_bar_chart(df, classe):
 
 
 def flight_distance_histogram(df, classe):
-    # Collect data from PySpark DataFrame
     data = df.select('Flight Distance').rdd.flatMap(lambda x: x).collect()
 
-    # Create histogram
     fig = go.Figure()
 
-    # Add histogram trace
     fig.add_trace(
         go.Histogram(
             x=data,
@@ -323,7 +291,6 @@ def flight_distance_histogram(df, classe):
         )
     )
 
-    # Add KDE (Kernel Density Estimate) trace
     fig.add_trace(
         go.Histogram(
             x=data,
@@ -335,7 +302,6 @@ def flight_distance_histogram(df, classe):
         )
     )
 
-    # Update layout based on the class parameter
     if classe == "eco":
         fig.update_layout(
             title="Distribution des distances de vols des clients non-loyaux en Eco",
@@ -365,17 +331,13 @@ def flight_distance_histogram(df, classe):
 
 
 def flight_distance_satisfaction_histogram(df, loyal):
-    # Collect data from PySpark DataFrame
     data = df.collect()
 
-    # Extract values for the plot
     distance_bins = [row['Distance Bin'] for row in data]
     percentages = [row['Percentage'] for row in data]
 
-    # Create the figure
     fig = go.Figure()
 
-    # Add scatter plot trace
     fig.add_trace(
         go.Scatter(
             x=distance_bins,
@@ -387,7 +349,6 @@ def flight_distance_satisfaction_histogram(df, loyal):
         )
     )
 
-    # Update layout based on the loyalty parameter
     if loyal:
         fig.update_layout(
             title="Satisfaction des clients loyaux selon la distance de vol",
@@ -403,7 +364,6 @@ def flight_distance_satisfaction_histogram(df, loyal):
             xaxis_tickangle=-45
         )
 
-    # Add annotations for each point
     for i in range(len(distance_bins)):
         fig.add_annotation(
             x=distance_bins[i],
@@ -446,10 +406,8 @@ def services_comparison_graphs(df):
             )
         )
 
-        # Convertir en Pandas DataFrame pour Plotly
         df_pandas = df_long.toPandas()
 
-        # Créer le graphique
         fig = go.Figure()
 
         for satisfaction in ['satisfied', 'dissatisfied']:
