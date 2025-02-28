@@ -1,6 +1,6 @@
 from dash import Dash, html, Output, Input, dcc, callback_context, no_update
 import dash_bootstrap_components as dbc
-from dash.exceptions import PreventUpdate
+# from dash.exceptions import PreventUpdate
 
 # RUN ANALYSES
 from data_processing import get_spark_analyses
@@ -10,6 +10,7 @@ get_spark_analyses()
 from layouts.resume import layout_resume
 from layouts.loyal import layout_loyal
 from layouts.non_loyal import layout_non_loyal
+
 
 # APP INITIALISATION
 app = Dash(__name__, external_stylesheets=[dbc.themes.LUMEN])
