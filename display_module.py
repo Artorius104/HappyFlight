@@ -1,5 +1,6 @@
 import plotly.graph_objs as go
-import plotly.express as px
+# import plotly.express as px
+
 
 def satisfaction_pie_chart(df, filtered):
     fig = go.Figure(
@@ -22,6 +23,7 @@ def satisfaction_pie_chart(df, filtered):
         )
     return fig
 
+
 def customer_type_pie_chart(df, filtered):
     fig = go.Figure(
         data=[go.Pie(
@@ -42,6 +44,7 @@ def customer_type_pie_chart(df, filtered):
             annotations=[dict(text='Customer Type', x=0.5, y=0.5, font_size=20, showarrow=False)]
         )
     return fig
+
 
 def age_distribution_chart(df, filtered):
     fig = go.Figure()
@@ -70,6 +73,7 @@ def age_distribution_chart(df, filtered):
         )
     return fig
 
+
 def plot_correlation_heatmap(df_pd):
     # Calculer la matrice de corrélation
     correlation_matrix = df_pd.corr()
@@ -97,6 +101,7 @@ def plot_correlation_heatmap(df_pd):
 
     return fig
 
+
 def travel_type_pie_chart(df):
     fig = go.Figure(
         data=[go.Pie(
@@ -111,6 +116,7 @@ def travel_type_pie_chart(df):
         annotations=[dict(text='Type of Travel', x=0.5, y=0.5, font_size=20, showarrow=False)]
     )
     return fig
+
 
 def travel_type_satisfaction_bar_chart(df):
     types_of_travel = df['Type of Travel'].unique()
@@ -137,6 +143,7 @@ def travel_type_satisfaction_bar_chart(df):
         legend_title="Satisfaction"
     )
     return fig
+
 
 def business_class_satisfaction_bar_chart(df):
     classes = df['Class'].unique()
@@ -166,6 +173,7 @@ def business_class_satisfaction_bar_chart(df):
 
     return fig
 
+
 def personal_class_satisfaction_bar_chart(df):
     classes = df['Class'].unique()
     satisfaction_levels = df['satisfaction'].unique()
@@ -193,6 +201,7 @@ def personal_class_satisfaction_bar_chart(df):
     )
 
     return fig
+
 
 def per_services_satisfaction_bar_chart(df, classe):
     fig = go.Figure()
@@ -289,6 +298,7 @@ def flight_distance_histogram(df, classe):
 
     return fig
 
+
 def flight_distance_satisfaction_histogram(df, loyal):
     fig = go.Figure()
 
@@ -331,6 +341,7 @@ def flight_distance_satisfaction_histogram(df, loyal):
         )
 
     return fig
+
 
 def services_comparison_graphs(avg_scores):
     fig_list = []

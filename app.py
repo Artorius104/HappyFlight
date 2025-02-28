@@ -1,6 +1,6 @@
 from dash import Dash, html, Output, Input, dcc, callback_context, no_update
 import dash_bootstrap_components as dbc
-from dash.exceptions import PreventUpdate
+# from dash.exceptions import PreventUpdate
 
 # RUN ANALYSES
 from data_processing import get_spark_analyses
