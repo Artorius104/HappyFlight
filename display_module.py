@@ -119,7 +119,7 @@ def travel_type_pie_chart(df):
 
 
 def travel_type_satisfaction_bar_chart(df):
-    types_of_travel = df['Type of Travel'].unique()
+    # types_of_travel = df['Type of Travel'].unique()
     satisfaction_levels = df['Satisfaction'].unique()
 
     data = []
@@ -146,7 +146,7 @@ def travel_type_satisfaction_bar_chart(df):
 
 
 def business_class_satisfaction_bar_chart(df):
-    classes = df['Class'].unique()
+    # classes = df['Class'].unique()
     satisfaction_levels = df['satisfaction'].unique()
 
     data = []
@@ -175,7 +175,7 @@ def business_class_satisfaction_bar_chart(df):
 
 
 def personal_class_satisfaction_bar_chart(df):
-    classes = df['Class'].unique()
+    # classes = df['Class'].unique()
     satisfaction_levels = df['satisfaction'].unique()
 
     data = []
